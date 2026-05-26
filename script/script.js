@@ -5,6 +5,7 @@ const userDropdown = document.getElementById("user-dropdown");
 const signOutBtn = document.getElementById("signOutBtn");
 const mobileMenuBtn = document.getElementById("mobile-menu-btn");
 const primaryMenu = document.getElementById("primary-menu");
+const scrollTopBtn = document.getElementById("scrollTopBtn");
 
 const modal = document.getElementById("user-modal");
 const closeModal = document.getElementById("closeModal");
@@ -153,6 +154,13 @@ document.addEventListener("click", (e) => {
 
 primaryMenu?.querySelectorAll("a").forEach(link => {
     link.addEventListener("click", closeMobileMenu);
+});
+
+scrollTopBtn?.addEventListener("click", () => {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 });
 
 // open modal
