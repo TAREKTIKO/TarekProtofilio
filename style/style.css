@@ -1,0 +1,19 @@
+html{
+  scroll-behavior: smooth;
+}
+
+.skill {
+    @apply flex flex-col items-center gap-2 hover:scale-110 transition text-gray-400;
+}
+
+.skill i {
+    transition: 0.3s;
+}
+
+.skill:hover span {
+    color: #f59e0b; /* amber */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style/all.css">
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Javascript -->
+    <script src="./script/dashboardscript.js"></script>
+</head>
+<body class="bg-black transition-opacity duration-500">
+<div class="flex h-screen">
+    <aside class="w-56 shrink-0 bg-black border-r border-yellow-700 p-6 flex flex-col">
+        <h3 class="text-white text-center text-2xl font-bold tracking-wide">
+            Dashboard
+        </h3>
+        <div class="flex flex-col items-center gap-3 mt-6" id="user-info">
+            <img src="./img/User1.png" alt="user-img" id="user-img" class="w-24 h-24 rounded-full border-4 border-yellow-500 object-cover">
+            <h3 id="user-name" class="text-white font-bold">Username</h3>
+            <span id="user-status" class="text-yellow-300 text-sm">Admin</span>
+        </div>
+        <div class="flex flex-col gap-2 my-8">
+            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" id="main-btn">Main</button>
+            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Projects</button>
+            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Services</button>
+            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Interactions</button>
+            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Users</button>
+            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Settings</button>
+        </div>
+        <!-- Logout -->
+        <div class="mt-auto">
+            <div class="h-px bg-gray-600 my-3"></div>
+            <button id="logoutbtn" class="w-full text-red-400 hover:bg-red-600 hover:text-white transition py-2 rounded-lg">
+                Logout
+            </button>
+        </div>
+    </aside>
+    <!-- ============================================================================================================================= -->
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Top Navbar -->
+        <nav class="h-24 border-b border-yellow-700 flex items-center justify-between px-6">
+            <h3 class="text-white text-2xl font-bold" id="button-name"></h3>
+            <a href="./index.html" class="text-white bg-yellow-600 hover:bg-black border border-yellow-600 transition py-2 px-4 rounded-lg">Home Page</a>
+        </nav>
+        <!-- Content -->
+        <main class="flex-1 p-6 bg-gray-200 overflow-hidden relative">
+            <!-- ============================================================================================================================= -->
+            <!-- main-page -->
+            <div id="main-content" class="absolute inset-0 p-6 transition-all duration-300 text-white">
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <!-- Card -->
+                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 hover:border-amber-500 transition shadow-md">
+                        <p class="text-gray-400 text-sm mb-4">Number Of Projects</p>
+                        <span class="text-3xl font-bold text-amber-400">0</span>
+                    </div>
+
+                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 hover:border-amber-500 transition shadow-md">
+                        <p class="text-gray-400 text-sm mb-4">Number Of Services</p>
+                        <span class="text-3xl font-bold text-amber-400">0</span>
+                    </div>
+
+                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 hover:border-amber-500 transition shadow-md">
+                        <p class="text-gray-400 text-sm mb-4">Number Of Users</p>
+                        <span class="text-3xl font-bold text-amber-400">0</span>
+                    </div>
+
+                    <!-- Special Card -->
+                    <div class="relative bg-gray-900 p-5 rounded-2xl border border-gray-800 hover:border-amber-500 transition shadow-md">
+                        <p class="text-gray-400 text-sm mb-4">Panned Interactions</p>
+                        <span class="text-3xl font-bold text-amber-400">0</span>
+
+                        <i class="fa-solid fa-exclamation 
+                            absolute -top-3 -right-3 
+                            bg-red-500 text-white 
+                            w-8 h-8 flex items-center justify-center 
+                            rounded-full shadow-lg">
+                        </i>
+                    </div>
+
+                </div>
+
+                <!-- Interactions Table -->
+                <div class="w-full bg-gray-900 mt-8 p-6 rounded-2xl border border-gray-800 shadow-md">
+                    <h3 class="text-amber-400 text-xl font-semibold mb-4">
+                        Interactions <span class="text-sm text-gray-400">(Live Action...)</span>
+                    </h3>
+
+                    <table class="w-full text-sm text-center">
+                        <thead>
+                            <tr class="border-b border-gray-700 text-gray-300">
+                                <th class="py-2">Id</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr class="border-b border-gray-800 hover:bg-gray-800 transition">
+                                <td class="py-3">1</td>
+                                <td>Tarek</td>
+                                <td class="text-green-400">Admin</td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-800 transition">
+                                <td class="py-3">2</td>
+                                <td>Tarek</td>
+                                <td class="text-green-400">Admin</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Bottom Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+
+                    <!-- Users -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-md">
+                        <h3 class="text-amber-400 text-lg font-semibold mb-4 text-center">Users</h3>
+
+                        <table class="w-full text-sm text-center">
+                            <tr class="border-b border-gray-700 text-gray-300">
+                                <th class="py-2">Id</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                            </tr>
+
+                            <tr class="hover:bg-gray-800 transition">
+                                <td class="py-2">1</td>
+                                <td>Tarek</td>
+                                <td class="text-green-400">Admin</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!-- Projects -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-md">
+                        <h3 class="text-amber-400 text-lg font-semibold mb-4 text-center">Projects</h3>
+
+                        <table class="w-full text-sm text-center">
+                            <tr class="border-b border-gray-700 text-gray-300">
+                                <th class="py-2">Id</th>
+                                <th>Name</th>
+                                <th>Skills</th>
+                            </tr>
+
+                            <tr class="hover:bg-gray-800 transition">
+                                <td class="py-2">1</td>
+                                <td>Website</td>
+                                <td class="text-blue-400">Full-Stack</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!-- Services -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-md">
+                        <h3 class="text-amber-400 text-lg font-semibold mb-4 text-center">Services</h3>
+                        <table class="w-full text-sm text-center">
+                            <tr class="border-b border-gray-700 text-gray-300">
+                                <th class="py-2">Id</th>
+                                <th>Name</th>
+                                <th>Details</th>
+                            </tr>
+
+                            <tr class="hover:bg-gray-800 transition">
+                                <td class="py-2">1</td>
+                                <td>Create Website</td>
+                                <td class="text-gray-400">Full-stack website</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================================================================================= -->
+            <!-- Projects Page -->
+            <div id="projects-content" class="absolute inset-0 p-6 hidden transition-all duration-300 overflow-auto text-white">
+
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-yellow-600">Projects Management</h2>
+                        <p class="text-gray-400 text-sm">Control, edit and manage your projects</p>
+                    </div>
+
+                    <button class="bg-yellow-600 hover:bg-yellow-500 text-black font-medium 
+                                py-2 px-5 rounded-lg transition shadow-md">
+                        + Add Project
+                    </button>
+                </div>
+
+                <!-- 🔥 Wrapper Card -->
+                <div class="bg-gray-950 border border-gray-800 rounded-2xl p-6 shadow-lg">
+
+                    <!-- Projects List -->
+                    <div id="projects-list" class="flex flex-col gap-5">
+
+                        <!-- Project Card -->
+                        <div class="group flex flex-col sm:flex-row sm:items-center justify-between 
+                                    bg-gray-900 p-5 rounded-2xl border border-gray-800 
+                                    hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-900/20 
+                                    transition-all duration-300" data-project-id="1">
+
+                            <div class="flex items-center gap-4 flex-1">
+                                <img src="project-thumb.jpg" alt="" 
+                                    class="w-16 h-16 rounded-lg object-cover border border-gray-700 
+                                        group-hover:scale-105 transition shrink-0">
+
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <h3 class="font-semibold text-lg">Project 1 Title</h3>
+                                        <span class="px-3 py-1 text-xs rounded-full 
+                                                    bg-green-600/20 text-green-400">
+                                            Published
+                                        </span>
+                                    </div>
+
+                                    <p class="text-gray-400 text-sm">
+                                        Short description of Project 1 goes here...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2 sm:gap-3 mt-4 sm:mt-0">
+                                <button class="edit-btn p-2 rounded-lg bg-gray-800 hover:bg-blue-600 transition group">
+                                    <i class="fas fa-edit text-blue-400 group-hover:text-white"></i>
+                                </button>
+
+                                <button class="delete-btn p-2 rounded-lg bg-gray-800 hover:bg-red-600 transition group">
+                                    <i class="fas fa-trash text-red-400 group-hover:text-white"></i>
+                                </button>
+
+                                <button class="hide-btn p-2 rounded-lg bg-gray-800 hover:bg-yellow-600 transition group">
+                                    <i class="fas fa-eye-slash text-gray-400 group-hover:text-white"></i>
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- Project Card 2 -->
+                        <div class="group flex flex-col sm:flex-row sm:items-center justify-between 
+                                    bg-gray-900 p-5 rounded-2xl border border-gray-800 
+                                    hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-900/20 
+                                    transition-all duration-300" data-project-id="2">
+
+                            <div class="flex items-center gap-4 flex-1">
+                                <img src="project-thumb-2.jpg" alt="" 
+                                    class="w-16 h-16 rounded-lg object-cover border border-gray-700 
+                                        group-hover:scale-105 transition shrink-0">
+
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <h3 class="font-semibold text-lg">Project 2 Title</h3>
+                                        <span class="px-3 py-1 text-xs rounded-full 
+                                                    bg-yellow-600/20 text-yellow-400">
+                                            Draft
+                                        </span>
+                                    </div>
+
+                                    <p class="text-gray-400 text-sm">
+                                        Short description of Project 2 goes here...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2 sm:gap-3 mt-4 sm:mt-0">
+                                <button class="edit-btn p-2 rounded-lg bg-gray-800 hover:bg-blue-600 transition group">
+                                    <i class="fas fa-edit text-blue-400 group-hover:text-white"></i>
+                                </button>
+
+                                <button class="delete-btn p-2 rounded-lg bg-gray-800 hover:bg-red-600 transition group">
+                                    <i class="fas fa-trash text-red-400 group-hover:text-white"></i>
+                                </button>
+
+                                <button class="hide-btn p-2 rounded-lg bg-gray-800 hover:bg-yellow-600 transition group">
+                                    <i class="fas fa-eye-slash text-gray-400 group-hover:text-white"></i>
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>     
+            <!-- ============================================================================================================================= -->
+            <!-- services-page -->
+            <div id="services-content" class="absolute inset-0 p-6 hidden transition-all duration-300 text-white">
+
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-yellow-600">Services Management</h2>
+                        <p class="text-gray-400 text-sm">Manage what you offer to your clients</p>
+                    </div>
+
+                    <button class="bg-yellow-600 hover:bg-yellow-500 text-black font-medium 
+                                py-2 px-5 rounded-lg transition shadow-md">
+                        + Add Service
+                    </button>
+                </div>
+
+                <!-- 🔥 Services Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- Service Card -->
+                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 
+                                hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-900/20 
+                                transition duration-300 group">
+
+                        <!-- Icon -->
+                        <div class="w-14 h-14 flex items-center justify-center rounded-xl 
+                                    bg-yellow-600/20 text-yellow-400 mb-4 group-hover:scale-110 transition">
+                            <i class="fas fa-code text-xl"></i>
+                        </div>
+
+                        <!-- Content -->
+                        <h3 class="text-lg font-semibold mb-2">Web Development</h3>
+                        <p class="text-gray-400 text-sm mb-4">
+                            Build modern and responsive websites using latest technologies.
+                        </p>
+
+                        <!-- Actions -->
+                        <div class="flex justify-between items-center mt-4">
+
+                            <span class="text-xs text-green-400 bg-green-600/20 px-3 py-1 rounded-full">
+                                Active
+                            </span>
+
+                            <div class="flex gap-2">
+                                <button class="p-2 rounded-lg bg-gray-800 hover:bg-blue-600 transition">
+                                    <i class="fas fa-edit text-blue-400 hover:text-white"></i>
+                                </button>
+                                <button class="p-2 rounded-lg bg-gray-800 hover:bg-red-600 transition">
+                                    <i class="fas fa-trash text-red-400 hover:text-white"></i>
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Service Card 2 -->
+                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 
+                                hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-900/20 
+                                transition duration-300 group">
+
+                        <div class="w-14 h-14 flex items-center justify-center rounded-xl 
+                                    bg-yellow-600/20 text-yellow-400 mb-4 group-hover:scale-110 transition">
+                            <i class="fas fa-desktop text-xl"></i>
+                        </div>
+
+                        <h3 class="text-lg font-semibold mb-2">Desktop Applications</h3>
+                        <p class="text-gray-400 text-sm mb-4">
+                            Create powerful desktop apps using C# and modern frameworks.
+                        </p>
+
+                        <div class="flex justify-between items-center mt-4">
+
+                            <span class="text-xs text-yellow-400 bg-yellow-600/20 px-3 py-1 rounded-full">
+                                Draft
+                            </span>
+
+                            <div class="flex gap-2">
+                                <button class="p-2 rounded-lg bg-gray-800 hover:bg-blue-600 transition">
+                                    <i class="fas fa-edit text-blue-400 hover:text-white"></i>
+                                </button>
+                                <button class="p-2 rounded-lg bg-gray-800 hover:bg-red-600 transition">
+                                    <i class="fas fa-trash text-red-400 hover:text-white"></i>
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ============================================================================================================================= -->
+            <!-- interactions-page -->
+            <div id="interactions-content" class="absolute inset-0 p-6 hidden transition-all duration-300 text-white">
+                <h2 class="text-2xl font-bold mb-2 text-yellow-600">Available Comments & Messages</h2>
+                <p class="text-gray-400 mb-6">Manage user interactions and requests</p>
+                <!-- Card -->
+                <div class="w-full bg-gray-900 rounded-2xl p-6 border border-gray-800 shadow-md">
+                    
+                    <table class="w-full text-sm text-center">
+                        
+                        <!-- Head -->
+                        <thead>
+                            <tr class="border-b border-gray-700 text-gray-300">
+                                <th class="py-3">Id</th>
+                                <th>Username</th>
+                                <th class="text-left px-4">Details</th>
+                                <th>Date | Time</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        
+                        <!-- Body -->
+                        <tbody>
+                            
+                            <tr class="border-b border-gray-800 hover:bg-gray-800 transition">
+                                <td class="py-3">1</td>
+                                <td class="font-medium">Tarek</td>
+                                <td class="text-left px-4 text-gray-300">
+                                    I wanna make a website
+                                </td>
+                                <td class="text-gray-400">19/3/2026 | 4:12 PM</td>
+                                <td>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-600/20 text-blue-400">
+                                        Comment
+                                    </span>
+                                </td>
+                            </tr>
+                            
+                            <tr class="hover:bg-gray-800 transition">
+                                <td class="py-3">2</td>
+                                <td class="font-medium">Tarek</td>
+                                <td class="text-left px-4 text-gray-300">
+                                    I wanna make a desktop application
+                                </td>
+                                <td class="text-gray-400">19/3/2026 | 4:15 PM</td>
+                                <td>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-600/20 text-green-400">
+                                        Message
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- ============================================================================================================================= -->
+            <!-- users-page -->
+            <div id="users-content" class="absolute inset-0 p-6 hidden transition-all duration-300 text-white">
+                
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-yellow-600">Users Management</h2>
+                        <p class="text-gray-400 text-sm">Manage and control your users</p>
+                    </div>
+                    
+                    <button class="text-white hover:text-yellow-600 bg-yellow-600 hover:bg-gray-200 border border-yellow-600 transition py-2 px-4 rounded-lg">Add Users</button>
+                </div>
+                
+                <!-- Table Card -->
+                <div class="w-full bg-gray-900 rounded-2xl p-6 border border-gray-800 shadow-md">
+                    
+                    <table class="w-full text-sm text-center">
+                        
+                        <!-- Head -->
+                        <thead>
+                            <tr class="border-b border-gray-700 text-gray-300">
+                                <th class="py-3">Id</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        
+                        <!-- Body -->
+                        <tbody>
+                            
+                            <tr class="border-b border-gray-800 hover:bg-gray-800 transition">
+                                <td class="py-3">1</td>
+                                <td class="font-medium">Tarek</td>
+                                <td class="text-gray-400">tarek@mail.com</td>
+                                
+                                <!-- Role -->
+                                <td>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium 
+                                    bg-green-600/20 text-green-400">
+                                    Admin
+                                </span>
+                            </td>
+                            
+                            <!-- Actions -->
+                            <td class="flex justify-center gap-3">
+                                <button class="text-blue-400 hover:text-blue-300 transition">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-400 hover:text-red-300 transition">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr class="hover:bg-gray-800 transition">
+                                <td class="py-3">2</td>
+                                <td class="font-medium">Ahmed</td>
+                                <td class="text-gray-400">ahmed@mail.com</td>
+                                
+                                <td>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium 
+                                    bg-yellow-600/20 text-yellow-400">
+                                    User
+                                </span>
+                            </td>
+                            
+                            <td class="flex justify-center gap-3">
+                                <button class="text-blue-400 hover:text-blue-300 transition">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-400 hover:text-red-300 transition">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                    
+                </table>
+                
+            </div>
+            
+        </div>
+        
+        <!-- ============================================================================================================================= -->
+        <!-- settings-page -->
+        <div id="settings-content" class="absolute inset-0 p-6 hidden transition-all duration-300">
+                <h2 class="text-2xl font-bold mb-2 text-yellow-600">Settings Page</h2>
+                <p class="text-gray-400 mb-6">Edit the full page setting</p>
+                <!-- Outer Card  -->
+                <div class="w-full bg-gradient-to-r from-gray-900 to-gray-800 p-8 rounded-2xl">
+                <div class="bg-gray-950 rounded-2xl p-6 border border-gray-800 mb-4">
+                    <h3 class="text-lg font-semibold mb-6 text-white">
+                        Edit Logo & Title
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Website Title -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm text-gray-300 font-medium">
+                                Edit Website Title
+                            </label>
+
+                            <input type="text"
+                                class="p-3 rounded-lg bg-gray-800 border border-gray-700 text-white
+                                    focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        </div>
+                        <!-- Logo Upload -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm text-gray-300 font-medium">
+                                Edit Website Logo
+                            </label>
+                            <label class="flex flex-col items-center justify-center gap-3 
+                                        p-6 border-2 border-dashed border-gray-600 
+                                        rounded-xl bg-gray-800 cursor-pointer 
+                                        hover:border-yellow-500 transition">
+
+                                <i class="fa-solid fa-image text-2xl text-gray-400"></i>
+                                <span class="text-sm text-gray-400">Click to upload logo</span>
+
+                                <input type="file" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                    <!-- ============================================================================================================================= -->
+                    <!-- Inner Card 2 -->
+                    <div class="bg-gray-950 rounded-2xl p-6 border border-gray-800 mb-4">
+                        <h3 class="text-lg font-semibold mb-6 text-white">Edit Hero Section</h3>
+                        <!-- Form Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Title -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-sm text-gray-300 font-medium">
+                                    Hero Section Title
+                                </label>
+                                <input type="text" 
+                                class="p-3 rounded-lg bg-gray-800 border border-gray-700 text-white 
+                                focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                            <!-- Details -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-sm text-gray-300 font-medium">
+                                    Hero Section Details
+                                </label>
+                                <textarea rows="4"
+                                class="p-3 rounded-lg bg-gray-800 border border-gray-700 text-white 
+                                focus:outline-none focus:ring-2 focus:ring-yellow-600 resize-none">
+                            </textarea>
+                        </div>
+                        <!-- Image Upload -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm text-gray-300 font-medium">
+                                Upload Image
+                            </label>
+                            
+                            <label class="flex flex-col items-center justify-center gap-3 p-4 border-2 border-dashed border-gray-600 rounded-xlbg-gray-800 cursor-pointer hover:border-yellow-500 transition">
+                                <i class="fa-solid fa-image text-2xl text-gray-400"></i>
+                                <span class="text-sm text-gray-400">Click to upload image</span>
+                                
+                                <input type="file" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+        <!-- ============================================================================================================================= -->
+        
+        <!-- Modals -->
+        <!-- Edit Modal -->
+            <div id="edit-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                <div class="bg-gray-900 text-white rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl border border-gray-700">
+                    <h3 class="text-xl font-bold mb-4">Edit Project</h3>
+                    <form id="edit-form" class="flex flex-col gap-4">
+                        <input type="text" id="edit-title" placeholder="Project Title" class="border p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <textarea id="edit-desc" placeholder="Project Description" rows="4" class="border p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <div class="flex justify-end gap-3 mt-4">
+                            <button type="button" id="edit-cancel" class="px-5 py-2.5 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 transition">Cancel</button>
+                            <button type="submit" class="px-5 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div id="delete-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                <div class="bg-gray-900 text-white rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl border border-gray-700">
+                    <h3 class="text-xl font-bold mb-4">Confirm Deletion</h3>
+                    <p class="mb-6">هل أنت متأكد من حذف هذا المشروع؟ العملية لا يمكن التراجع عنها.</p>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" id="delete-no" class="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition">Cancel</button>
+                        <button type="button" id="delete-yes" class="px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
