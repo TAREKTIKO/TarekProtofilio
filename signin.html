@@ -3,78 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign-in</title>
+    <title>Create Account</title>
     <link rel="stylesheet" href="style/all.css">
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Javascript -->
-    <script src="./script/signinscript.js" defer></script>
 </head>
 
-<body class="bg-black flex items-center justify-center min-h-screen">
-    <form class="bg-gray-900 border border-yellow-500 w-full max-w-md flex flex-col gap-5 p-8 rounded-2xl shadow-lg">
-        <!-- Title -->
-        <h3 class="text-3xl text-center font-bold text-white mb-4">
+<body class="bg-black flex items-center justify-center min-h-screen px-4">
+    <form id="signInForm" class="bg-gray-900 border border-yellow-500 w-full max-w-md flex flex-col gap-5 p-8 rounded-2xl shadow-lg">
+        <h3 class="text-3xl text-center font-bold text-white mb-2">
             Create Account
         </h3>
-        <!-- Full Name -->
+
         <div class="flex flex-col gap-1">
-            <label class="text-gray-300 text-sm">Full Name</label>
-            <input type="text" placeholder="Enter your full name"
+            <label for="name" class="text-gray-300 text-sm">Name</label>
+            <input id="name" name="name" type="text" placeholder="Enter your name"
                 class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
         </div>
-        <!-- Username -->
+
         <div class="flex flex-col gap-1">
-            <label class="text-gray-300 text-sm">Username</label>
-            <input type="text" placeholder="Enter username"
+            <label for="email" class="text-gray-300 text-sm">Email</label>
+            <input id="email" name="email" type="email" placeholder="Enter your email"
                 class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
         </div>
-        <!-- Email -->
-        <div class="flex flex-col gap-1">
-            <label class="text-gray-300 text-sm">Email</label>
-            <input type="email" placeholder="Enter Your Email"
-                class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
-        </div>
-        <!-- Password -->
+
         <div class="flex flex-col gap-1 relative">
-            <label class="text-gray-300 text-sm">Password</label>
-            <input id="password" type="password" placeholder="Enter password"
+            <label for="password" class="text-gray-300 text-sm">Password</label>
+            <input id="password" name="password" type="password" placeholder="Enter password"
                 class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600 pr-10" required>
             <i id="togglePass" class="fa-regular fa-eye absolute right-3 top-10 text-gray-400 cursor-pointer"></i>
         </div>
-        <!-- Confirm Password -->
+
         <div class="flex flex-col gap-1 relative">
-            <label class="text-gray-300 text-sm">Confirm Password</label>
+            <label for="repassword" class="text-gray-300 text-sm">Confirm Password</label>
             <input id="repassword" type="password" placeholder="Confirm password"
                 class="p-3 pr-10 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
             <i id="toggleRePass" class="fa-regular fa-eye absolute right-3 top-10 text-gray-400 cursor-pointer"></i>
         </div>
-        <!-- Gender -->
+
+        <div class="flex flex-col gap-1">
+            <label for="avatar" class="text-gray-300 text-sm">Avatar</label>
+            <select id="avatar" name="avatar"
+                class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                <option value="./img/Avatar1.png">Avatar 1</option>
+                <option value="./img/Avatar2.png">Avatar 2</option>
+                <option value="./img/Avatar3.png">Avatar 3</option>
+                <option value="./img/Avatar4.png">Avatar 4</option>
+                <option value="./img/Avatar5.png">Avatar 5</option>
+                <option value="./img/Avatar6.png">Avatar 6</option>
+            </select>
+            <img id="avatarPreview" src="./img/Avatar1.png" alt="Selected avatar preview"
+                class="mt-2 h-16 w-16 rounded-full border-2 border-yellow-600 object-cover">
+        </div>
+
+        <input id="role" name="role" type="hidden" value="user">
+
         <div class="flex flex-col gap-2">
             <label class="text-gray-300 text-sm">Gender</label>
             <div class="flex gap-6 text-white text-sm">
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="gender" class="accent-yellow-500">
+                    <input type="radio" name="gender" value="male" class="accent-yellow-500" required>
                     Male
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="gender" class="accent-yellow-500">
+                    <input type="radio" name="gender" value="female" class="accent-yellow-500">
                     Female
                 </label>
             </div>
         </div>
-        <!-- Button -->
-        <button 
+
+        <p id="signInMessage" class="hidden rounded-xl px-4 py-3 text-sm"></p>
+
+        <button id="signInSubmit" type="submit"
             class="bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl transition mt-2 shadow-md">
-            Sign In
+            Create Account
         </button>
+
+        <p class="text-center text-sm text-gray-300">
+            Already have an account?
+            <a href="./login.html" class="text-yellow-500 hover:underline">Login</a>
+        </p>
     </form>
-    <!-- JS -->
-    <script>
 
-    </script>
-
+    <script type="module" src="./script/signinscript.js"></script>
 </body>
 </html>

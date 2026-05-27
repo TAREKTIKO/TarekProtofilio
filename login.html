@@ -5,48 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="style/all.css">
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- JS -->
-    <script src="./script/loginscript.js" defer></script>
 </head>
 
-<body class="bg-black flex items-center justify-center min-h-screen">
+<body class="bg-black flex items-center justify-center min-h-screen px-4">
     <div class="w-full max-w-md">
-        <!-- Form -->
-        <form class="bg-gray-900 border border-yellow-500 flex flex-col gap-5 p-8 rounded-2xl shadow-lg">
-            <!-- Title -->
-            <h3 class="text-3xl text-center font-bold text-white mb-4">
-                Welcome Back 👋
+        <form id="loginForm" class="bg-gray-900 border border-yellow-500 flex flex-col gap-5 p-8 rounded-2xl shadow-lg">
+            <h3 class="text-3xl text-center font-bold text-white mb-2">
+                Welcome Back
             </h3>
-            <!-- Username -->
+
             <div class="flex flex-col gap-1">
-                <label class="text-gray-300 text-sm">Username</label>
-                <input type="text" placeholder="Enter your username" class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                <label for="loginEmail" class="text-gray-300 text-sm">Email</label>
+                <input id="loginEmail" name="email" type="email" placeholder="Enter your email"
+                    class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
             </div>
-            <!-- Password -->
+
             <div class="flex flex-col gap-1 relative">
-                <label class="text-gray-300 text-sm">Password</label>
-                <input id="loginPassword" type="password" placeholder="Enter your password"
-                    class="p-3 pr-10 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                <i id="toggleLoginPass"
-                   class="fa-regular fa-eye absolute right-3 top-10 text-gray-400 cursor-pointer"></i>
+                <label for="loginPassword" class="text-gray-300 text-sm">Password</label>
+                <input id="loginPassword" name="password" type="password" placeholder="Enter your password"
+                    class="p-3 pr-10 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
+                <i id="toggleLoginPass" class="fa-regular fa-eye absolute right-3 top-10 text-gray-400 cursor-pointer"></i>
             </div>
-            <!-- Forgot Password -->
+
             <div class="flex justify-end">
                 <a href="./fpassword.html" class="text-sm text-yellow-500 hover:underline">
                     Forgot Password?
                 </a>
             </div>
-            <!-- Button -->
-            <button 
+
+            <p id="loginMessage" class="hidden rounded-xl px-4 py-3 text-sm"></p>
+
+            <button id="loginSubmit" type="submit"
                 class="bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl transition shadow-md">
                 Login
             </button>
         </form>
-        <!-- Register -->
+
         <div class="text-center mt-4 text-gray-300 text-sm">
             Don't have an account?
             <a href="./signin.html" class="text-yellow-500 hover:underline">
@@ -54,5 +50,7 @@
             </a>
         </div>
     </div>
+
+    <script type="module" src="./script/loginscript.js"></script>
 </body>
 </html>
