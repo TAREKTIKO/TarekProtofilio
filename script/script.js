@@ -17,6 +17,7 @@ const editName = document.getElementById("editName");
 const displayName = document.getElementById("displayName");
 const dropdownName = document.getElementById("dropdownName");
 const dropdownRole = document.getElementById("dropdownRole");
+let dashboardBtn = document.getElementById("dashboardBtn");
 
 const mainAvatar = document.getElementById("mainAvatar");
 const dropdownAvatar = document.getElementById("dropdownAvatar");
@@ -53,12 +54,38 @@ function markSelectedAvatar(avatarPath) {
     });
 }
 
+function renderDashboardButton(isAdmin) {
+    dashboardBtn = document.getElementById("dashboardBtn");
+
+    if (!isAdmin) {
+        dashboardBtn?.remove();
+        dashboardBtn = null;
+        return;
+    }
+
+    if (dashboardBtn || !saveBtn?.parentElement) return;
+
+    dashboardBtn = document.createElement("button");
+    dashboardBtn.id = "dashboardBtn";
+    dashboardBtn.type = "button";
+    dashboardBtn.textContent = "Go To Dashboard";
+    dashboardBtn.className = "border border-amber-500 py-2 rounded-xl text-white hover:bg-amber-500 hover:text-black transition";
+    dashboardBtn.addEventListener("click", () => {
+        window.location.href = "dashboard.html";
+    });
+
+    saveBtn.insertAdjacentElement("afterend", dashboardBtn);
+}
+
 function renderLoggedInUI(name, avatar, role = "user") {
     if (!userBtn) return;
 
     isLoggedIn = true;
     const userRole = role || "user";
     const displayRole = userRole.charAt(0).toUpperCase() + userRole.slice(1);
+    const isAdmin = userRole.toLowerCase() === "admin";
+
+    renderDashboardButton(isAdmin);
 
     // Navbar
     userBtn.innerHTML = `
@@ -101,6 +128,7 @@ function renderLoggedOutUI() {
     if (!userBtn) return;
 
     isLoggedIn = false;
+    renderDashboardButton(false);
     userBtn.innerHTML = `
         <span id="signInBtn" class="text-sm font-semibold px-4 cursor-pointer">
             Sign In
