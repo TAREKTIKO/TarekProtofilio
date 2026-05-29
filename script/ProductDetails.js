@@ -13,6 +13,7 @@ const commentsContainer = document.getElementById("commentsContainer");
 const commentInput = document.getElementById("commentInput");
 const addCommentBtn = document.getElementById("addCommentBtn");
 const pageLoader = document.getElementById("pageLoader");
+const commentCountSpan = document.querySelector("h3 .text-amber-500");
 
 const likeBtn = document.getElementById("likeBtn");
 const likeIcon = document.getElementById("likeIcon");
@@ -26,6 +27,7 @@ const copyBtn = document.getElementById("copyBtn");
 let currentUser = null;
 let currentProject = null;
 let isLiked = false;
+let allComments = [];
 
 async function getCurrentUser() {
     try {
@@ -43,12 +45,36 @@ async function getCurrentUser() {
     }
 }
 
-// Robust current user resolver: tries Supabase auth, then window.supabaseClient, then localStorage userId
+function getStoredUserProfile() {
+    const id = localStorage.getItem("userId");
+    const email = localStorage.getItem("userEmail");
+    const name = localStorage.getItem("username");
+    const avatar = localStorage.getItem("avatar");
+
+    if (!id && !email) return null;
+
+    return {
+        id,
+        email,
+        name,
+        avatar,
+    };
+}
+
+function setCommentButtonState(enabled) {
+    if (!addCommentBtn || !commentInput) return;
+
+    addCommentBtn.disabled = !enabled;
+    addCommentBtn.classList.toggle("opacity-50", !enabled);
+    addCommentBtn.classList.toggle("cursor-not-allowed", !enabled);
+    commentInput.placeholder = enabled ? "Write your comment..." : "Sign in first to comment...";
+}
+
+// Robust current user resolver: tries Supabase auth, then window.supabaseClient, then localStorage user data
 async function resolveCurrentUser() {
-    // Prefer already cached user
     if (currentUser) return currentUser;
 
-    // Try SDK auth methods
+    // Try SDK auth methods first
     try {
         const u = await getCurrentUser();
         if (u) {
@@ -59,38 +85,73 @@ async function resolveCurrentUser() {
         console.warn("getCurrentUser failed:", e);
     }
 
-    // Try window.supabaseClient if available
     const client = window.supabaseClient || supabase;
+    const storedUser = getStoredUserProfile();
+
     if (client) {
         try {
-            // If a provider stored session cookies, getUser should work via client
             const { data } = await client.auth.getUser();
             if (data?.user) {
                 currentUser = data.user;
                 return currentUser;
             }
         } catch (e) {
-            // ignore
+            // no active auth session, continue to fallback
         }
+    }
 
-        // Fallback to localStorage-stored userId
-        const storedId = localStorage.getItem("userId");
-        if (storedId) {
+    if (storedUser) {
+        if (client) {
             try {
                 const { data: userRow, error } = await client
                     .from("users")
                     .select("id, name, email, avatar")
-                    .eq("id", storedId)
+                    .eq("id", storedUser.id)
                     .maybeSingle();
 
                 if (!error && userRow) {
-                    currentUser = { id: userRow.id, email: userRow.email, user_metadata: { full_name: userRow.name }, name: userRow.name };
+                    currentUser = {
+                        id: userRow.id,
+                        email: userRow.email,
+                        user_metadata: { full_name: userRow.name },
+                        name: userRow.name,
+                    };
                     return currentUser;
                 }
             } catch (e) {
-                // ignore
+                console.warn("Local user lookup by id failed:", e);
+            }
+
+            if (storedUser.email) {
+                try {
+                    const { data: userRow, error } = await client
+                        .from("users")
+                        .select("id, name, email, avatar")
+                        .eq("email", storedUser.email)
+                        .maybeSingle();
+
+                    if (!error && userRow) {
+                        currentUser = {
+                            id: userRow.id,
+                            email: userRow.email,
+                            user_metadata: { full_name: userRow.name },
+                            name: userRow.name,
+                        };
+                        return currentUser;
+                    }
+                } catch (e) {
+                    console.warn("Local user lookup by email failed:", e);
+                }
             }
         }
+
+        currentUser = {
+            id: storedUser.id,
+            email: storedUser.email,
+            name: storedUser.name || "User",
+            user_metadata: { full_name: storedUser.name || "User" },
+        };
+        return currentUser;
     }
 
     return null;
@@ -170,14 +231,19 @@ async function loadProjectDetails() {
     }
 }
 
+function updateCommentCount() {
+    const totalComments = allComments.length;
+    if (commentCountSpan) {
+        commentCountSpan.textContent = `(${totalComments})`;
+    }
+}
+
 async function loadComments() {
     const { data, error } = await supabase
         .from("comments")
         .select(`
             id,
             comment_text,
-            likes,
-            dislikes,
             created_at,
             user_id,
             users (
@@ -196,7 +262,61 @@ async function loadComments() {
         return;
     }
 
-    renderComments(data || []);
+    // Fetch reactions and replies for all comments
+    const commentsWithData = await Promise.all((data || []).map(async (comment) => {
+        const [reactions, replies] = await Promise.all([
+            loadCommentReactions(comment.id),
+            loadCommentReplies(comment.id)
+        ]);
+        return { ...comment, reactions, replies };
+    }));
+
+    allComments = commentsWithData || [];
+    updateCommentCount();
+    renderComments(allComments);
+}
+
+async function loadCommentReactions(commentId) {
+    const { data, error } = await supabase
+        .from("likes")
+        .select("id, user_id, reaction_type")
+        .eq("comment_id", commentId);
+
+    if (error) {
+        console.error("Load reactions error:", error);
+        return { likes: [], dislikes: [] };
+    }
+
+    return {
+        likes: (data || []).filter(r => r.reaction_type === 'like'),
+        dislikes: (data || []).filter(r => r.reaction_type === 'dislike')
+    };
+}
+
+async function loadCommentReplies(commentId) {
+    const { data, error } = await supabase
+        .from("replies")
+        .select(`
+            id,
+            reply_text,
+            created_at,
+            user_id,
+            likes,
+            dislikes,
+            users (
+                name,
+                avatar
+            )
+        `)
+        .eq("comment_id", commentId)
+        .order("created_at", { ascending: true });
+
+    if (error) {
+        console.error("Load replies error:", error);
+        return [];
+    }
+
+    return data || [];
 }
 
 function renderComments(comments) {
@@ -211,9 +331,33 @@ function renderComments(comments) {
         const avatar = c.users?.avatar || "./img/avatar1.png";
         const name = c.users?.name || "User";
         const time = formatTime(c.created_at);
+        const likeCount = c.reactions?.likes?.length || 0;
+        const dislikeCount = c.reactions?.dislikes?.length || 0;
+        const userLikeId = currentUser ? c.reactions?.likes?.find(r => r.user_id === currentUser.id)?.id : null;
+        const userDislikeId = currentUser ? c.reactions?.dislikes?.find(r => r.user_id === currentUser.id)?.id : null;
+
+        const repliesHTML = (c.replies || []).map(reply => {
+            const replyAvatar = reply.users?.avatar || "./img/avatar1.png";
+            const replyName = reply.users?.name || "User";
+            const replyTime = formatTime(reply.created_at);
+            return `
+                <div class="bg-gray-900 rounded-lg p-3 ml-8 border border-gray-800 mt-2">
+                    <div class="flex items-start gap-2">
+                        <img src="${replyAvatar}" alt="user" class="w-8 h-8 rounded-full object-cover border border-gray-700">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <h5 class="font-semibold text-sm">${replyName}</h5>
+                                <span class="text-xs text-gray-500">${replyTime}</span>
+                            </div>
+                            <p class="text-gray-300 text-sm mt-1">${reply.reply_text}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join("");
 
         return `
-            <div class="bg-gray-950 border border-gray-800 rounded-2xl p-5">
+            <div class="bg-gray-950 border border-gray-800 rounded-2xl p-5" data-comment-id="${c.id}">
                 <div class="flex items-start gap-4">
                     <img src="${avatar}" alt="user" class="w-12 h-12 rounded-full object-cover border border-gray-700">
                     <div class="flex-1">
@@ -228,16 +372,29 @@ function renderComments(comments) {
                             ${c.comment_text}
                         </p>
 
-                                        <div class="mt-3 flex items-center gap-3 text-sm text-gray-400">
-                                            <button class="comment-like-btn hover:text-red-400 transition flex items-center gap-1" data-comment-id="${c.id}">
-                                                <i class="fa-regular fa-heart"></i>
-                                                <span>${c.likes || 0}</span>
-                                            </button>
-                                            <button class="comment-dislike-btn hover:text-blue-400 transition flex items-center gap-1" data-comment-id="${c.id}">
-                                                <i class="fa-regular fa-thumbs-down"></i>
-                                                <span>${c.dislikes || 0}</span>
-                                            </button>
-                                        </div>
+                        <div class="mt-3 flex items-center gap-3 text-sm text-gray-400">
+                            <button class="comment-like-btn hover:text-red-400 transition flex items-center gap-1" data-comment-id="${c.id}" data-like-id="${userLikeId || ''}">
+                                <i class="fa-${userLikeId ? 'solid' : 'regular'} fa-heart"></i>
+                                <span class="like-count">${likeCount}</span>
+                            </button>
+                            <button class="comment-dislike-btn hover:text-blue-400 transition flex items-center gap-1" data-comment-id="${c.id}" data-dislike-id="${userDislikeId || ''}">
+                                <i class="fa-${userDislikeId ? 'solid' : 'regular'} fa-thumbs-down"></i>
+                                <span class="dislike-count">${dislikeCount}</span>
+                            </button>
+                            <button class="reply-btn hover:text-amber-400 transition flex items-center gap-1 ml-auto" data-comment-id="${c.id}">
+                                <i class="fa-regular fa-reply"></i>
+                                <span>Reply</span>
+                            </button>
+                        </div>
+
+                        ${repliesHTML ? `<div class="mt-4 space-y-2">${repliesHTML}</div>` : ''}
+
+                        <div class="reply-form hidden mt-3" data-comment-id="${c.id}">
+                            <div class="flex gap-2">
+                                <input type="text" class="reply-input flex-1 p-2 rounded-lg bg-gray-800 text-white border border-gray-700 text-sm" placeholder="Write a reply...">
+                                <button class="send-reply-btn px-3 py-2 bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition text-sm font-semibold">Send</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -251,8 +408,13 @@ async function addComment() {
 
     currentUser = currentUser || await resolveCurrentUser();
 
-    if (!currentUser) {
+    if (!currentUser || !currentUser.id) {
         alert("You must sign in first to comment.");
+        return;
+    }
+
+    if (!projectId) {
+        alert("Project ID is missing.");
         return;
     }
 
@@ -266,7 +428,10 @@ async function addComment() {
 
     if (error) {
         console.error("Add comment error:", error);
-        alert("Failed to add comment.");
+        const msg = error.message?.includes("row-level security") 
+            ? "Database permission error. Check RLS policies on comments table."
+            : "Failed to add comment.";
+        alert(msg);
         return;
     }
 
@@ -274,47 +439,133 @@ async function addComment() {
     await loadComments();
 }
 
-// Handle comment like/dislike via event delegation
+// Handle comment like/dislike, replies via event delegation
 commentsContainer.addEventListener("click", async (e) => {
     const likeBtnEl = e.target.closest(".comment-like-btn");
     const dislikeBtnEl = e.target.closest(".comment-dislike-btn");
+    const replyBtnEl = e.target.closest(".reply-btn");
+    const sendReplyBtnEl = e.target.closest(".send-reply-btn");
 
-    if (!likeBtnEl && !dislikeBtnEl) return;
+    if (!likeBtnEl && !dislikeBtnEl && !replyBtnEl && !sendReplyBtnEl) return;
 
     currentUser = currentUser || await resolveCurrentUser();
-    if (!currentUser) {
-        alert("You must sign in first to react to comments.");
+    if (!currentUser || !currentUser.id) {
+        alert("You must sign in first.");
         return;
     }
 
+    // Handle reply button
+    if (replyBtnEl) {
+        const commentId = replyBtnEl.dataset.commentId;
+        const replyForm = document.querySelector(`.reply-form[data-comment-id="${commentId}"]`);
+        if (replyForm) {
+            replyForm.classList.toggle("hidden");
+        }
+        return;
+    }
+
+    // Handle send reply
+    if (sendReplyBtnEl) {
+        const form = sendReplyBtnEl.closest(".reply-form");
+        const commentId = form.dataset.commentId;
+        const replyInput = form.querySelector(".reply-input");
+        const replyText = replyInput.value.trim();
+
+        if (!replyText) return;
+
+        try {
+            const { error } = await supabase.from("replies").insert({
+                comment_id: commentId,
+                user_id: currentUser.id,
+                reply_text: replyText,
+                likes: 0,
+                dislikes: 0
+            });
+
+            if (error) throw error;
+
+            replyInput.value = "";
+            form.classList.add("hidden");
+            await loadComments();
+        } catch (err) {
+            console.error("Send reply error:", err);
+            console.error("Reply error details:", {
+                message: err.message,
+                status: err.status,
+                code: err.code
+            });
+            const msg = err.message?.includes("row-level security")
+                ? "Database permission error on replies table. Ensure RLS policies allow inserts."
+                : err.message || "Failed to add reply.";
+            alert(msg);
+        }
+        return;
+    }
+
+    // Handle like/dislike
     const isLike = !!likeBtnEl;
     const btn = likeBtnEl || dislikeBtnEl;
     const commentId = btn.dataset.commentId;
+    const reactionId = isLike ? btn.dataset.likeId : btn.dataset.dislikeId;
 
     try {
-        // Fetch current counts
-        const { data: comment, error } = await supabase
-            .from("comments")
-            .select("likes,dislikes")
-            .eq("id", commentId)
-            .single();
+        if (reactionId) {
+            // User already reacted, remove the reaction
+            const { error } = await supabase
+                .from("likes")
+                .delete()
+                .eq("id", reactionId);
 
-        if (error) throw error;
+            if (error) throw error;
+        } else {
+            // Check if user has opposite reaction
+            const oppositeType = isLike ? 'dislike' : 'like';
+            const { data: oppositeReaction } = await supabase
+                .from("likes")
+                .select("id")
+                .eq("comment_id", commentId)
+                .eq("user_id", currentUser.id)
+                .eq("reaction_type", oppositeType)
+                .maybeSingle();
 
-        const field = isLike ? "likes" : "dislikes";
-        const newVal = (comment[field] || 0) + 1;
+            // Remove opposite reaction if exists
+            if (oppositeReaction?.id) {
+                await supabase
+                    .from("likes")
+                    .delete()
+                    .eq("id", oppositeReaction.id);
+            }
 
-        const { error: updateErr } = await supabase
-            .from("comments")
-            .update({ [field]: newVal })
-            .eq("id", commentId);
+            // Add new reaction
+            const { error } = await supabase.from("likes").insert({
+                user_id: currentUser.id,
+                comment_id: commentId,
+                reaction_type: isLike ? 'like' : 'dislike'
+            });
 
-        if (updateErr) throw updateErr;
+            if (error) throw error;
+        }
 
         await loadComments();
     } catch (err) {
         console.error("React comment error:", err);
-        alert("Failed to update reaction.");
+        console.error("Reaction error details:", {
+            message: err.message,
+            status: err.status,
+            code: err.code
+        });
+        
+        let msg = "Failed to update reaction.";
+        
+        if (err.message?.includes("reaction_type")) {
+            msg = "Database schema error: Run SQL_COMPLETE_SETUP.sql in Supabase to add the reaction_type column.";
+        } else if (err.message?.includes("row-level security")) {
+            msg = "Database permission error on likes table. Run SQL_COMPLETE_SETUP.sql to fix RLS policies.";
+        } else if (err.message) {
+            msg = err.message;
+        }
+        
+        alert(msg);
     }
 });
 
@@ -368,8 +619,13 @@ async function refreshLikeState() {
 async function likeProject() {
     currentUser = currentUser || await resolveCurrentUser();
 
-    if (!currentUser) {
+    if (!currentUser || !currentUser.id) {
         alert("You must sign in first to like this project.");
+        return;
+    }
+
+    if (!projectId) {
+        alert("Project ID is missing.");
         return;
     }
 
@@ -382,7 +638,10 @@ async function likeProject() {
 
     if (existingLikeError) {
         console.error("Check like error:", existingLikeError);
-        alert("Something went wrong.");
+        const msg = existingLikeError.message?.includes("row-level security")
+            ? "Database permission error. Check RLS policies on likes table."
+            : "Something went wrong.";
+        alert(msg);
         return;
     }
 
@@ -411,7 +670,10 @@ async function likeProject() {
 
         if (insertError) {
             console.error("Like error:", insertError);
-            alert(`Failed to like project: ${insertError.message || JSON.stringify(insertError)}`);
+            const msg = insertError.message?.includes("row-level security")
+                ? "Database permission error: RLS policy blocks likes. Ensure RLS policies allow inserts."
+                : `Failed to like project: ${insertError.message || JSON.stringify(insertError)}`;
+            alert(msg);
             return;
         }
 
@@ -454,12 +716,7 @@ async function init() {
     pageLoader?.classList.add("hidden");
 
     currentUser = await resolveCurrentUser();
-
-    if (!currentUser) {
-        addCommentBtn.disabled = true;
-        addCommentBtn.classList.add("opacity-50", "cursor-not-allowed");
-        commentInput.placeholder = "Sign in first to comment...";
-    }
+    setCommentButtonState(!!currentUser);
 
     await loadProjectDetails();
     await loadComments();
@@ -467,22 +724,12 @@ async function init() {
     await refreshLikeState();
 }
 
-// Listen to auth state changes to enable/disable comment and refresh like state
+// Listen to auth state changes to enable/disable comment controls and refresh like state.
 if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChange === "function") {
     supabase.auth.onAuthStateChange((event, session) => {
         currentUser = session?.user || null;
-
-        if (currentUser) {
-            addCommentBtn.disabled = false;
-            addCommentBtn.classList.remove("opacity-50", "cursor-not-allowed");
-            commentInput.placeholder = "Write your comment...";
-            refreshLikeState();
-        } else {
-            addCommentBtn.disabled = true;
-            addCommentBtn.classList.add("opacity-50", "cursor-not-allowed");
-            commentInput.placeholder = "Sign in first to comment...";
-            refreshLikeState();
-        }
+        setCommentButtonState(!!currentUser);
+        refreshLikeState();
     });
 }
 
@@ -500,3 +747,4 @@ shareModal?.addEventListener("click", (e) => {
 });
 
 window.addEventListener("load", init);
+

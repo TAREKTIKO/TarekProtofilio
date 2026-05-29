@@ -6,6 +6,29 @@ const loader = document.getElementById("pageLoader");
 
 let allProjects = [];
 
+async function getProjectStats(projectId) {
+    try {
+        const [likesResponse, commentsResponse] = await Promise.all([
+            supabase
+                .from("likes")
+                .select("id", { count: "exact", head: true })
+                .eq("product_id", projectId),
+            supabase
+                .from("comments")
+                .select("id", { count: "exact", head: true })
+                .eq("product_id", projectId)
+        ]);
+
+        return {
+            likes: likesResponse.count || 0,
+            comments: commentsResponse.count || 0
+        };
+    } catch (error) {
+        console.error("Error loading project stats:", error);
+        return { likes: 0, comments: 0 };
+    }
+}
+
 async function loadProjects() {
     try {
         const { data, error } = await supabase
@@ -26,7 +49,19 @@ async function loadProjects() {
 
         if (error) throw error;
 
-        allProjects = data || [];
+        // Fetch stats for each project
+        const projectsWithStats = await Promise.all(
+            (data || []).map(async (project) => {
+                const stats = await getProjectStats(project.id);
+                return {
+                    ...project,
+                    likes_count: stats.likes,
+                    comments_count: stats.comments
+                };
+            })
+        );
+
+        allProjects = projectsWithStats || [];
         renderProjects(allProjects);
     } catch (error) {
         console.error("Error loading projects:", error);
@@ -50,11 +85,12 @@ function renderProjects(projects) {
             project.project_media?.[0]?.media_url ||
             "./img/Prod1.png";
 
+        const likesCount = project.likes_count ?? 0;
         const commentsCount = project.comments_count ?? 0;
 
         card.dataset.date = project.created_at || "";
         card.dataset.name = project.title || "";
-        card.dataset.likes = project.likes || 0;
+        card.dataset.likes = likesCount;
 
         card.innerHTML = `
             <div class="overflow-hidden h-64">
@@ -71,7 +107,7 @@ function renderProjects(projects) {
                 <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
                     <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
                         <i class="fa-regular fa-heart"></i>
-                        <span class="likes-count">${project.likes || 0}</span>
+                        <span class="likes-count">${likesCount}</span>
                     </div>
 
                     <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
@@ -110,7 +146,7 @@ function initializeSorting() {
         } else if (value === "name") {
             sortedProjects.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
         } else if (value === "top-likes") {
-            sortedProjects.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+            sortedProjects.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
         }
 
         renderProjects(sortedProjects);
