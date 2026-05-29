@@ -9,10 +9,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Javascript -->
-    <script type="module" src="./script/supabase.js"></script>
-    <script src="./script/script.js" defer></script>
-    <script src="./script/certificate.js" defer></script>
     <!-- style -->
      <link rel="stylesheet" href="style/style.css">
 </head>
@@ -136,102 +132,9 @@
 
             </div>
             <!-- Grid -->
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+            <div id="certificatesGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
 
-            <!-- Card 1 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="relative overflow-hidden h-64">
-                    <img src="./img/Certificate.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                    <!-- ✔ Verified -->
-                    <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                        <i class="fa-solid fa-check"></i>Verified</span>
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-                    <!-- Title -->
-                    <h3 class="text-lg font-semibold flex items-center gap-2">
-                        <i class="fa-solid fa-graduation-cap text-blue-400"></i>Frontend Diploma Certification</h3>
-                    <!-- Description -->
-                    <p class="text-gray-400 text-sm">I got certification from SEF Academy in Frontend by completing 3200h.</p>
-                    <!-- Info -->
-                    <div class="flex justify-between text-xs text-gray-400">
-                        <span class="flex items-center gap-1">
-                            <i class="fa-regular fa-calendar"></i>2024</span>
-                        <span class="flex items-center gap-1">
-                            <i class="fa-regular fa-clock"></i>6 Months
-                        </span>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button onclick="openCertificate('./img/Certificate.png')"class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">View</button>
-                        <button onclick="openDetails()"class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">Details</button>
-                    </div>
-                </div>
-            </div> <!-- /Card1 -->
-
-            <!-- Card 2 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="relative overflow-hidden h-64">
-                    <img src="./img/Certificate.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                    <!-- ✔ Verified -->
-                    <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                        <i class="fa-solid fa-check"></i>Verified</span>
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-                    <!-- Title -->
-                    <h3 class="text-lg font-semibold flex items-center gap-2">
-                        <i class="fa-solid fa-graduation-cap text-blue-400"></i>Frontend Diploma Certification</h3>
-                    <!-- Description -->
-                    <p class="text-gray-400 text-sm">I got certification from SEF Academy in Frontend by completing 3200h.</p>
-                    <!-- Info -->
-                    <div class="flex justify-between text-xs text-gray-400">
-                        <span class="flex items-center gap-1">
-                            <i class="fa-regular fa-calendar"></i>2024</span>
-                        <span class="flex items-center gap-1">
-                            <i class="fa-regular fa-clock"></i>6 Months
-                        </span>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button onclick="openCertificate('./img/Certificate.png')"class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">View</button>
-                        <button onclick="openDetails()"class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">Details</button>
-                    </div>
-                </div>
-            </div> <!-- /Card2 -->
-
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="relative overflow-hidden h-64">
-                    <img src="./img/Certificate.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                    <!-- ✔ Verified -->
-                    <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                        <i class="fa-solid fa-check"></i>Verified</span>
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-                    <!-- Title -->
-                    <h3 class="text-lg font-semibold flex items-center gap-2">
-                        <i class="fa-solid fa-graduation-cap text-blue-400"></i>Frontend Diploma Certification</h3>
-                    <!-- Description -->
-                    <p class="text-gray-400 text-sm">I got certification from SEF Academy in Frontend by completing 3200h.</p>
-                    <!-- Info -->
-                    <div class="flex justify-between text-xs text-gray-400">
-                        <span class="flex items-center gap-1">
-                            <i class="fa-regular fa-calendar"></i>2024</span>
-                        <span class="flex items-center gap-1">
-                            <i class="fa-regular fa-clock"></i>6 Months
-                        </span>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button onclick="openCertificate('./img/Certificate.png')"class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">View</button>
-                        <button onclick="openDetails()"class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">Details</button>
-                    </div>
-                </div>
-            </div> <!-- /Card3 -->        
+                <p class="col-span-full text-gray-400">Loading certificates...</p>
             </div> <!-- /Grid -->
         </div> <!-- /Container -->
 
@@ -254,27 +157,14 @@
                 </button>
 
                 <!-- Title -->
-                <h3 class="text-xl font-bold text-white mb-4">
-                    Frontend Diploma Details
+                <h3 id="detailsTitle" class="text-xl font-bold text-white mb-4">
+                    Certificate Details
                 </h3>
 
                 <!-- Content -->
-                <div class="text-gray-300 text-sm space-y-4">
+                <div id="detailsContent" class="text-gray-300 text-sm space-y-4">
 
-                    <p><span class="text-amber-500 font-semibold">Academy:</span> SEF Academy</p>
-
-                    <p><span class="text-amber-500 font-semibold">Duration:</span> 6 Months</p>
-
-                    <p><span class="text-amber-500 font-semibold">Hours:</span> 3200 Hours</p>
-
-                    <p><span class="text-amber-500 font-semibold">Skills Learned:</span></p>
-
-                    <ul class="list-disc pl-5 space-y-1 text-gray-400">
-                        <li>HTML, CSS, JavaScript</li>
-                        <li>React & Tailwind</li>
-                        <li>Responsive Design</li>
-                        <li>API Integration</li>
-                    </ul>
+                    <p class="text-gray-400">Choose a certificate to see details.</p>
 
                 </div>
 
@@ -356,5 +246,10 @@
         </div>
 
     </div>
+
+    <!-- Javascript -->
+    <script type="module" src="./script/supabase.js"></script>
+    <script src="./script/script.js"></script>
+    <script src="./script/certificate.js"></script>
 </body>
 </html>

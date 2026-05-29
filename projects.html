@@ -9,10 +9,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Javascript -->
-    <script type="module" src="./script/supabase.js"></script>
-    <script src="./script/script.js" defer></script>
-    <script src="./script/script.js" defer></script>
     <!-- style -->
      <link rel="stylesheet" href="style/style.css">
 </head>
@@ -158,7 +154,7 @@
                         <option value="latest">Latest</option>
                         <option value="oldest">Oldest</option>
                         <option value="name">Name (A-Z)</option>
-                        <option value="status">Status</option>
+                        <option value="top-likes">Top Likes</option>
 
                     </select>
 
@@ -168,244 +164,8 @@
 
             </div>
             <!-- Grid -->
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-
-            <!-- Card 1 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="overflow-hidden h-64">
-                    <img src="./img/Prod1.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-
-                    <h3 class="text-lg font-semibold">
-                        Project Title
-                    </h3>
-                    <p class="text-gray-400 text-sm">
-                        Short description about the project goes here...
-                    </p>
-                    <!-- 🔥 Stats (Likes + Comments) -->
-                    <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
-                        <!-- Likes -->
-                        <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="likes-count">120</span>
-                        </div>
-                        <!-- Comments -->
-                        <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="comments-count">35</span>
-                        </div>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
-                            View Demo
-                        </button>
-
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
-                            Details
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem]">
-                <!-- Image -->
-                <div class="overflow-hidden h-64">
-                    <img src="./img/Prod1.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4">
-                    <h3 class="text-lg font-semibold">
-                        Project Title
-                    </h3>
-                    <p class="text-gray-400 text-sm">
-                        Short description about the project goes here...
-                    </p>
-                    <!-- 🔥 Stats (Likes + Comments) -->
-                    <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
-                        <!-- Likes -->
-                        <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="likes-count">120</span>
-                        </div>
-                        <!-- Comments -->
-                        <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="comments-count">35</span>
-                        </div>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-4">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
-                            View Demo
-                        </button>
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
-                            Details
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem]">
-                <!-- Image -->
-                <div class="overflow-hidden h-64">
-                    <img src="./img/Prod1.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4">
-                    <h3 class="text-lg font-semibold">
-                        Project Title
-                    </h3>
-                    <p class="text-gray-400 text-sm">
-                        Short description about the project goes here...
-                    </p>
-                    <!-- 🔥 Stats (Likes + Comments) -->
-                    <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
-                        <!-- Likes -->
-                        <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="likes-count">120</span>
-                        </div>
-                        <!-- Comments -->
-                        <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="comments-count">35</span>
-                        </div>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-4">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
-                            View Demo
-                        </button>
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
-                            Details
-                        </button>
-                    </div>
-                </div>
-            </div>        
-            
-            <!-- Card 4 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem]">
-                <!-- Image -->
-                <div class="overflow-hidden h-64">
-                    <img src="./img/Prod1.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4">
-                    <h3 class="text-lg font-semibold">
-                        Project Title
-                    </h3>
-                    <p class="text-gray-400 text-sm">
-                        Short description about the project goes here...
-                    </p>
-                    <!-- 🔥 Stats (Likes + Comments) -->
-                    <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
-                        <!-- Likes -->
-                        <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="likes-count">120</span>
-                        </div>
-                        <!-- Comments -->
-                        <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="comments-count">35</span>
-                        </div>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-4">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
-                            View Demo
-                        </button>
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
-                            Details
-                        </button>
-                    </div>
-                </div>
-            </div>        
-            
-            <!-- Card 5 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem]">
-                <!-- Image -->
-                <div class="overflow-hidden h-64">
-                    <img src="./img/Prod1.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4">
-                    <h3 class="text-lg font-semibold">
-                        Project Title
-                    </h3>
-                    <p class="text-gray-400 text-sm">
-                        Short description about the project goes here...
-                    </p>
-                    <!-- 🔥 Stats (Likes + Comments) -->
-                    <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
-                        <!-- Likes -->
-                        <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="likes-count">120</span>
-                        </div>
-                        <!-- Comments -->
-                        <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="comments-count">35</span>
-                        </div>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-4">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
-                            View Demo
-                        </button>
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
-                            Details
-                        </button>
-                    </div>
-                </div>
-            </div>        
-            
-            <!-- Card 6 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem]">
-                <!-- Image -->
-                <div class="overflow-hidden h-64">
-                    <img src="./img/Prod1.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4">
-                    <h3 class="text-lg font-semibold">
-                        Project Title
-                    </h3>
-                    <p class="text-gray-400 text-sm">
-                        Short description about the project goes here...
-                    </p>
-                    <!-- 🔥 Stats (Likes + Comments) -->
-                    <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
-                        <!-- Likes -->
-                        <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="likes-count">120</span>
-                        </div>
-                        <!-- Comments -->
-                        <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="comments-count">35</span>
-                        </div>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-4">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
-                            View Demo
-                        </button>
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
-                            Details
-                        </button>
-                    </div>
-                </div>
-            </div>
-
+            <div id="projectsContainer" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+                <!-- Project cards will be injected here by JavaScript -->
             </div>
         </div>
     </main>
@@ -483,5 +243,9 @@
 
     </div>
 
+    <!-- Javascript -->
+    <script type="module" src="./script/supabase.js"></script>
+    <script type="module" src="./script/projects.js"></script>
+    <script src="./script/script.js"></script>
 </body>
 </html>

@@ -9,10 +9,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Javascript -->
-    <script type="module" src="./script/supabase.js"></script>
-    <script src="./script/script.js" defer></script>
-    <script src="./script/ProductDetails.js" defer></script>
     <!-- style -->
     
 </head>
@@ -141,7 +137,7 @@
                 <!-- Main Info -->
                 <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-lg">
                     <div class="relative">
-                        <img src="./img/Prod1.png" alt="Main product image" class="w-full h-[320px] object-cover">
+                        <img id="projectMainImage" src="" alt="Main product image" class="w-full h-[320px] object-cover">
                         <div class="absolute top-4 left-4 bg-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                             <i class="fa-solid fa-heart text-lg"></i>
                             <span>Top Liked</span>
@@ -151,16 +147,17 @@
                     <div class="p-6">
                         <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                             <div>
-                                <h3 class="text-2xl font-bold">Create a cafe website</h3>
-                                <p class="text-gray-400 mt-3 leading-relaxed">
-                                    This project is a responsive cafe website built with HTML, CSS, and JavaScript. It features a modern design, interactive menu, and smooth animations to enhance user experience.
+                                <h3 id="projectTitle" class="text-2xl font-bold"></h3>
+                                <p id="projectDescription" class="text-gray-400 mt-3 leading-relaxed">
+                                    
                                 </p>
                             </div>
 
-                            <div class="flex items-center gap-2 text-amber-500 font-semibold shrink-0">
-                                <i class="fa-solid fa-heart text-lg"></i>
-                                <span>1.2K</span>
-                            </div>
+                            <button id="likeBtn"
+                                class="flex items-center gap-2 text-amber-500 font-semibold shrink-0 hover:scale-105 transition">
+                                <i id="likeIcon" class="fa-regular fa-heart text-lg"></i>
+                                <span id="projectLikes">0</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -194,9 +191,10 @@
                     </div>
 
                     <div class="mt-6 flex gap-3">
-                        <button class="flex-1 bg-amber-500 text-black py-3 rounded-xl hover:bg-amber-400 transition font-semibold">
-                            View Live
-                        </button>
+                        <a id="projectDemoBtn" href="#" target="_blank"
+                        class="flex-1 bg-amber-500 text-black py-3 rounded-xl hover:bg-amber-400 transition font-semibold text-center">
+                        View Live
+                        </a>
                         <button id="shareBtn" class="flex-1 border border-amber-500 py-3 rounded-xl hover:bg-amber-500 hover:text-black transition font-semibold">
                             Share
                         </button>
@@ -222,15 +220,15 @@
                         </div>
 
                         <!-- Image 1 -->
-                        <img src="./img/Prod1.png" alt="preview 1"
+                        <img src="" alt="preview 1"
                             class="w-[320px] md:w-[420px] h-56 shrink-0 rounded-2xl object-cover border border-gray-800">
 
                         <!-- Image 2 -->
-                        <img src="./img/Prod2.png" alt="preview 2"
+                        <img src="" alt="preview 2"
                             class="w-[320px] md:w-[420px] h-56 shrink-0 rounded-2xl object-cover border border-gray-800">
 
                         <!-- Image 3 -->
-                        <img src="./img/Prod3.png" alt="preview 3"
+                        <img src="" alt="preview 3"
                             class="w-[320px] md:w-[420px] h-56 shrink-0 rounded-2xl object-cover border border-gray-800">
 
                     </div>
@@ -251,10 +249,12 @@
                 <div class="mb-6 bg-gray-950 border border-gray-800 rounded-2xl p-4">
                     <div class="grid gap-3">
                         <h4 class="text-sm font-semibold text-amber-500 mb-3">Add a comment</h4>
+
                         <div class="flex items-center gap-3">
-                            <input id="commentInput" type="text" placeholder="Write your comment..."
+                            <input id="commentInput" type="text"
+                                placeholder="Write your comment..."
                                 class="flex-1 p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-amber-500">
-        
+
                             <button id="addCommentBtn"
                                 class="px-5 py-3 bg-amber-500 text-black rounded-xl hover:bg-amber-400 transition font-semibold">
                                 Post
@@ -263,134 +263,8 @@
                     </div>
                 </div>
 
-                <div class="space-y-6">
-
-                    <!-- Comment 1 -->
-                    <div class="bg-gray-950 border border-gray-800 rounded-2xl p-5">
-                        <div class="flex items-start gap-4">
-                            <img src="./img/avatar1.png" alt="user" class="w-12 h-12 rounded-full object-cover border border-gray-700">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between gap-4 relative">
-
-                                    <!-- User Info -->
-                                    <div>
-                                        <h4 class="font-semibold">Ahmed Ali</h4>
-                                        <p class="text-xs text-gray-500">2 hours ago</p>
-                                    </div>
-
-                                    <!-- Actions -->
-                                    <div class="flex items-center gap-3 text-sm text-gray-400">
-
-                                        <!-- Like -->
-                                        <button class="hover:text-red-400 transition flex items-center gap-1">
-                                            <i class="fa-regular fa-heart"></i>
-                                            <span>24</span>
-                                        </button>
-
-                                        <!-- Dislike -->
-                                        <button class="hover:text-blue-400 transition flex items-center gap-1">
-                                            <i class="fa-regular fa-thumbs-down"></i>
-                                            <span>3</span>
-                                        </button>
-
-                                        <!-- 3 dots -->
-                                        <div class="relative">
-                                            <button class="comment-menu-btn text-gray-400 hover:text-white">
-                                                <i class="fa-solid fa-ellipsis"></i>
-                                            </button>
-
-                                            <!-- Dropdown -->
-                                            <div class="comment-menu hidden absolute right-0 mt-2 w-28 bg-gray-900 border border-gray-700 rounded-lg shadow-lg">
-                                                <button class="edit-btn block w-full text-left px-3 py-2 text-sm hover:bg-gray-800">
-                                                    Edit
-                                                </button>
-                                                <button class="delete-btn block w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-gray-800">
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <p class="comment-text text-gray-300 mt-3 leading-relaxed">
-                                    Great work! The design is clean and the preview section is really helpful.
-                                </p>
-
-                                <button class="mt-3 text-sm text-amber-500 hover:text-amber-400 transition">
-                                    <i class="fa-solid fa-reply mr-1"></i> Reply
-                                </button>
-
-                                <!-- Reply -->
-                                <div class="mt-4 ml-6 pl-5 border-l-2 border-amber-500/30 relative">
-                                    <i class="fa-solid fa-turn-down-right text-amber-500/70 text-sm absolute -left-2 top-1"></i>
-
-                                    <div class="flex items-start gap-3">
-                                        <img src="./img/User1.png" alt="admin" class="w-10 h-10 rounded-full object-cover border border-gray-700">
-                                        <div class="flex-1">
-                                            <div class="flex items-center justify-between gap-4">
-                                                <div>
-                                                    <h5 class="font-semibold text-amber-500">Tarek Ahmed</h5>
-                                                    <p class="text-xs text-gray-500">Admin • replied 1 hour ago</p>
-                                                </div>
-                                            </div>
-
-                                            <p class="text-gray-300 mt-2 leading-relaxed">
-                                                Thanks a lot! Glad you liked it.
-                                            </p>
-
-                                            <div class="mt-3 flex items-center gap-3 text-sm text-gray-400">
-                                                <button class="hover:text-red-400 transition flex items-center gap-1">
-                                                    <i class="fa-regular fa-heart"></i>
-                                                    <span>8</span>
-                                                </button>
-                                                <button class="hover:text-blue-400 transition flex items-center gap-1">
-                                                    <i class="fa-regular fa-thumbs-down"></i>
-                                                    <span>1</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Comment 2 -->
-                    <div class="bg-gray-950 border border-gray-800 rounded-2xl p-5">
-                        <div class="flex items-start gap-4">
-                            <img src="./img/avatar2.png" alt="user" class="w-12 h-12 rounded-full object-cover border border-gray-700">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between gap-4">
-                                    <div>
-                                        <h4 class="font-semibold">Mona Hassan</h4>
-                                        <p class="text-xs text-gray-500">Yesterday</p>
-                                    </div>
-
-                                    <div class="flex items-center gap-3 text-sm text-gray-400">
-                                        <button class="hover:text-red-400 transition flex items-center gap-1">
-                                            <i class="fa-regular fa-heart"></i>
-                                            <span>41</span>
-                                        </button>
-                                        <button class="hover:text-blue-400 transition flex items-center gap-1">
-                                            <i class="fa-regular fa-thumbs-down"></i>
-                                            <span>2</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <p class="comment-text text-gray-300 mt-3 leading-relaxed">
-                                    The details section and the horizontal media layout are very well organized.
-                                </p>
-
-                                <button class="mt-3 text-sm text-amber-500 hover:text-amber-400 transition">
-                                    <i class="fa-solid fa-reply mr-1"></i> Reply
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+                <!-- Dynamic Comments -->
+                <div id="commentsContainer" class="space-y-6"></div>
             </div>
 
         </div>
@@ -436,6 +310,9 @@
         </div>
 
     </div>
-
+    <!-- Javascript -->
+    <script type="module" src="./script/supabase.js"></script>
+    <script src="./script/script.js"></script>
+    <script type="module" src="./script/ProductDetails.js"></script>
 </body>
 </html>

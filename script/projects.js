@@ -1,63 +1,124 @@
+import { supabase } from "./supabase.js";
+
 const sortSelect = document.getElementById("sortProjects");
-const container = document.querySelector("#projectsContainer");
-// Loader 
+const container = document.getElementById("projectsContainer");
 const loader = document.getElementById("pageLoader");
 
-sortSelect.addEventListener("change", () => {
+let allProjects = [];
 
-    const cards = Array.from(container.querySelectorAll(".project-card"));
-    const value = sortSelect.value;
+async function loadProjects() {
+    try {
+        const { data, error } = await supabase
+            .from("products")
+            .select(`
+                id,
+                title,
+                description,
+                main_image,
+                video_url,
+                likes,
+                created_at,
+                project_media (
+                    media_url
+                )
+            `)
+            .order("created_at", { ascending: false });
 
-    let sorted;
+        if (error) throw error;
 
-    if (value === "latest") {
-        sorted = cards.sort((a, b) => 
-            new Date(b.dataset.date) - new Date(a.dataset.date)
-        );
+        allProjects = data || [];
+        renderProjects(allProjects);
+    } catch (error) {
+        console.error("Error loading projects:", error);
+        container.innerHTML = `
+            <p class="text-red-500 text-center col-span-full">
+                Failed To Load Projects
+            </p>
+        `;
     }
+}
 
-    else if (value === "oldest") {
-        sorted = cards.sort((a, b) => 
-            new Date(a.dataset.date) - new Date(b.dataset.date)
-        );
-    }
-
-    else if (value === "name") {
-        sorted = cards.sort((a, b) => 
-            a.dataset.name.localeCompare(b.dataset.name)
-        );
-    }
-
-    else if (value === "status") {
-        sorted = cards.sort((a, b) => 
-            a.dataset.status.localeCompare(b.dataset.status)
-        );
-    }
-
+function renderProjects(projects) {
     container.innerHTML = "";
-    sorted.forEach(card => container.appendChild(card));
-});
 
-// Loader 
+    projects.forEach(project => {
+        const card = document.createElement("div");
+        card.className = "project-card bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem] flex flex-col justify-between";
 
-// عند الضغط على أي لينك
-document.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", function(e) {
+        const image =
+            project.main_image ||
+            project.project_media?.[0]?.media_url ||
+            "./img/Prod1.png";
 
-        // تجاهل اللينكات اللي فيها #
-        if (this.getAttribute("href").startsWith("#")) return;
+        const commentsCount = project.comments_count ?? 0;
 
-        e.preventDefault();
+        card.dataset.date = project.created_at || "";
+        card.dataset.name = project.title || "";
+        card.dataset.likes = project.likes || 0;
 
-        loader.classList.remove("hidden");
+        card.innerHTML = `
+            <div class="overflow-hidden h-64">
+                <img src="${image}" class="w-full h-full object-fill group-hover:scale-105 transition duration-300" onerror="this.src='./img/Prod1.png'">
+            </div>
 
-        setTimeout(() => {
-            window.location.href = this.href;
-        }, 500); // وقت بسيط للأنيميشن
+            <div class="p-6 flex flex-col gap-4 flex-1">
+                <h3 class="text-lg font-semibold">${project.title || "Project Title"}</h3>
+
+                <p class="text-gray-400 text-sm">
+                    ${project.description || "Short description about the project goes here..."}
+                </p>
+
+                <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
+                    <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
+                        <i class="fa-regular fa-heart"></i>
+                        <span class="likes-count">${project.likes || 0}</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
+                        <i class="fa-regular fa-comment"></i>
+                        <span class="comments-count">${commentsCount}</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-auto">
+                    <a href="${project.video_url || '#'}" target="_blank"
+                        class="flex-1 text-center bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
+                        View Demo
+                    </a>
+
+                    <a href="./ProductDetails.html?id=${project.id}"
+                        class="flex-1 text-center border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
+                        Details
+                    </a>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(card);
     });
-});
+}
 
-// عند تحميل الصفحة
-window.addEventListener("load", () => {
+function initializeSorting() {
+    sortSelect.addEventListener("change", () => {
+        let sortedProjects = [...allProjects];
+        const value = sortSelect.value;
+
+        if (value === "latest") {
+            sortedProjects.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        } else if (value === "oldest") {
+            sortedProjects.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        } else if (value === "name") {
+            sortedProjects.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+        } else if (value === "top-likes") {
+            sortedProjects.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+        }
+
+        renderProjects(sortedProjects);
+    });
+}
+
+window.addEventListener("load", async () => {
     loader.classList.add("hidden");
+    await loadProjects();
+    initializeSorting();
 });
