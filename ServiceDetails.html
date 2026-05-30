@@ -9,9 +9,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Javascript -->
-    <script type="module" src="./script/supabase.js"></script>
-    <script src="./script/script.js" defer></script>
     <!-- style -->
     <style>
         .scrollbar-hide::-webkit-scrollbar {
@@ -208,8 +205,8 @@
                             </div>
 
                             <div class="flex justify-between gap-4 border-b border-gray-800 pb-3">
-                                <span class="text-gray-400">Updated</span>
-                                <span id="updatedValue">-</span>
+                                <span class="text-gray-400">Date</span>
+                                <span id="serviceDate">dd/mm/yyyy</span>
                             </div>
 
                             <div class="flex justify-between gap-4 border-b border-gray-800 pb-3">
@@ -280,183 +277,9 @@
         </div>
     </section>
 
-    <script>
-        const serviceData = {
-            "1": {
-                title: "Web Development Service",
-                shortTitle: "Modern responsive websites with clean design and fast performance.",
-                desc: "I provide professional web development services focused on clean UI, responsive layouts, and strong performance. The service includes planning, design, development, and deployment support.",
-                category: "Development",
-                duration: "2 to 4 weeks",
-                updated: "2026",
-                delivery: "Online",
-                price: "$150",
-                ratings: 840,
-                media: [
-                    { kind: "video", src: "./video/service-demo.mp4" },
-                    { kind: "image", src: "./img/service1.png" },
-                    { kind: "image", src: "./img/service2.png" },
-                    { kind: "image", src: "./img/service3.png" }
-                ],
-                comments: [
-                    {
-                        user: "Karim Omar",
-                        avatar: "./img/avatar3.png",
-                        time: "3 days ago",
-                        text: "Very professional service and excellent communication.",
-                        likes: 17,
-                        dislikes: 0,
-                        reply: {
-                            user: "Tarek Ahmed",
-                            avatar: "./img/User1.png",
-                            time: "2 days ago",
-                            text: "Thank you, happy to help!",
-                            likes: 5,
-                            dislikes: 0
-                        }
-                    },
-                    {
-                        user: "Nour Ahmed",
-                        avatar: "./img/avatar4.png",
-                        time: "Yesterday",
-                        text: "The process was easy and the final result was great.",
-                        likes: 9,
-                        dislikes: 1,
-                        reply: null
-                    }
-                ]
-            }
-        };
-
-        const title = document.getElementById("title");
-        const desc = document.getElementById("desc");
-        const mainImage = document.getElementById("mainImage");
-        const cardTitle = document.getElementById("cardTitle");
-        const cardShortDesc = document.getElementById("cardShortDesc");
-        const ratingCount = document.getElementById("ratingCount");
-        const categoryValue = document.getElementById("categoryValue");
-        const durationValue = document.getElementById("durationValue");
-        const updatedValue = document.getElementById("updatedValue");
-        const deliveryValue = document.getElementById("deliveryValue");
-        const priceValue = document.getElementById("priceValue");
-        const mediaStrip = document.getElementById("mediaStrip");
-        const mediaCount = document.getElementById("mediaCount");
-        const commentsBox = document.getElementById("commentsBox");
-        const commentsCount = document.getElementById("commentsCount");
-
-        const current = serviceData["1"];
-
-        title.textContent = current.title;
-        desc.textContent = current.desc;
-        cardTitle.textContent = current.title;
-        cardShortDesc.textContent = current.shortTitle;
-        ratingCount.textContent = current.ratings;
-        categoryValue.textContent = current.category;
-        durationValue.textContent = current.duration;
-        updatedValue.textContent = current.updated;
-        deliveryValue.textContent = current.delivery;
-        priceValue.textContent = current.price;
-        mainImage.src = current.media[0].src;
-
-        function renderMedia(items) {
-            mediaStrip.innerHTML = "";
-            mediaCount.textContent = items.length;
-
-            items.forEach((item, index) => {
-                if (index === 0 && item.kind === "video") {
-                    mediaStrip.innerHTML += `
-                        <div class="w-[320px] md:w-[420px] shrink-0 rounded-2xl overflow-hidden border border-gray-800 bg-black">
-                            <video controls class="w-full h-56 object-cover">
-                                <source src="${item.src}" type="video/mp4">
-                            </video>
-                        </div>
-                    `;
-                } else {
-                    mediaStrip.innerHTML += `
-                        <img src="${item.src}" alt="media"
-                            class="w-[320px] md:w-[420px] h-56 shrink-0 rounded-2xl object-cover border border-gray-800">
-                    `;
-                }
-            });
-        }
-
-        function renderComments(comments) {
-            commentsBox.innerHTML = "";
-            commentsCount.textContent = comments.length;
-
-            comments.forEach((comment) => {
-                commentsBox.innerHTML += `
-                    <div class="bg-gray-950 border border-gray-800 rounded-2xl p-5">
-                        <div class="flex items-start gap-4">
-                            <img src="${comment.avatar}" alt="${comment.user}" class="w-12 h-12 rounded-full object-cover border border-gray-700">
-
-                            <div class="flex-1">
-                                <div class="flex items-start justify-between gap-4">
-                                    <div>
-                                        <h4 class="font-semibold">${comment.user}</h4>
-                                        <p class="text-xs text-gray-500">${comment.time}</p>
-                                    </div>
-
-                                    <div class="flex items-center gap-3 text-sm text-gray-400 shrink-0">
-                                        <button class="hover:text-red-400 transition flex items-center gap-1">
-                                            <i class="fa-regular fa-heart"></i>
-                                            <span>${comment.likes}</span>
-                                        </button>
-                                        <button class="hover:text-blue-400 transition flex items-center gap-1">
-                                            <i class="fa-regular fa-thumbs-down"></i>
-                                            <span>${comment.dislikes}</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <p class="text-gray-300 mt-3 leading-relaxed">
-                                    ${comment.text}
-                                </p>
-
-                                <button class="mt-3 text-sm text-amber-500 hover:text-amber-400 transition">
-                                    <i class="fa-solid fa-reply mr-1"></i> Reply
-                                </button>
-
-                                ${comment.reply ? `
-                                    <div class="mt-4 ml-6 pl-5 border-l-2 border-amber-500/30 relative">
-                                        <i class="fa-solid fa-turn-down-right text-amber-500/70 text-sm absolute -left-2 top-1"></i>
-
-                                        <div class="flex items-start gap-3">
-                                            <img src="${comment.reply.avatar}" alt="${comment.reply.user}" class="w-10 h-10 rounded-full object-cover border border-gray-700">
-
-                                            <div class="flex-1">
-                                                <div>
-                                                    <h5 class="font-semibold text-amber-500">${comment.reply.user}</h5>
-                                                    <p class="text-xs text-gray-500">${comment.reply.time}</p>
-                                                </div>
-
-                                                <p class="text-gray-300 mt-2 leading-relaxed">
-                                                    ${comment.reply.text}
-                                                </p>
-
-                                                <div class="mt-3 flex items-center gap-3 text-sm text-gray-400">
-                                                    <button class="hover:text-red-400 transition flex items-center gap-1">
-                                                        <i class="fa-regular fa-heart"></i>
-                                                        <span>${comment.reply.likes}</span>
-                                                    </button>
-                                                    <button class="hover:text-blue-400 transition flex items-center gap-1">
-                                                        <i class="fa-regular fa-thumbs-down"></i>
-                                                        <span>${comment.reply.dislikes}</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ` : ""}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        renderMedia(current.media);
-        renderComments(current.comments);
-    </script>
+    <!-- Javascript -->
+    <script type="module" src="./script/supabase.js"></script>
+    <script src="./script/script.js"></script>
+    <script src="./script/ServiceDetails.js"></script>
 </body>
 </html>

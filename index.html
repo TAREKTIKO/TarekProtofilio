@@ -205,7 +205,7 @@
     </main>
     <div class="h-[1px] w-full bg-amber-600 backdrop-blur-lg"></div>
     <!-- ================================================================================================================================== -->
-    <!-- Projects Section -->
+    <!-- Projects Section --> 
     <section id="Projects" class="pt-10 min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
         <div class="container mx-auto px-6 py-12">
             <!-- Title -->
@@ -218,131 +218,12 @@
                 </p>
             </div>
             <!-- Grid -->
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-
-            <!-- Card 1 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="overflow-hidden h-64">
-                    <img src="./img/Prod1.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
+            <div id="projectsGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+                <!-- Projects will be loaded here dynamically -->
+                <div class="col-span-full text-center text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                    <p>Loading projects...</p>
                 </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-
-                    <h3 class="text-lg font-semibold">
-                        Project Title
-                    </h3>
-                    <p class="text-gray-400 text-sm">
-                        Short description about the project goes here...
-                    </p>
-                    <!-- 🔥 Stats (Likes + Comments) -->
-                    <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
-                        <!-- Likes -->
-                        <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="likes-count">120</span>
-                        </div>
-                        <!-- Comments -->
-                        <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="comments-count">35</span>
-                        </div>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
-                            View Demo
-                        </button>
-
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
-                            Details
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="overflow-hidden h-64">
-                    <img src="./img/Prod1.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-
-                    <h3 class="text-lg font-semibold">
-                        Project Title
-                    </h3>
-                    <p class="text-gray-400 text-sm">
-                        Short description about the project goes here...
-                    </p>
-                    <!-- 🔥 Stats (Likes + Comments) -->
-                    <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
-                        <!-- Likes -->
-                        <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="likes-count">120</span>
-                        </div>
-                        <!-- Comments -->
-                        <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="comments-count">35</span>
-                        </div>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
-                            View Demo
-                        </button>
-
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
-                            Details
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[28rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="overflow-hidden h-64">
-                    <img src="./img/Prod1.png" class="w-full h-full object-fill group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-
-                    <h3 class="text-lg font-semibold">
-                        Project Title
-                    </h3>
-                    <p class="text-gray-400 text-sm">
-                        Short description about the project goes here...
-                    </p>
-                    <!-- 🔥 Stats (Likes + Comments) -->
-                    <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
-                        <!-- Likes -->
-                        <div class="flex items-center gap-2 hover:text-red-400 transition cursor-pointer">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="likes-count">120</span>
-                        </div>
-                        <!-- Comments -->
-                        <div class="flex items-center gap-2 hover:text-blue-400 transition cursor-pointer">
-                            <i class="fa-regular fa-comment"></i>
-                            <span class="comments-count">35</span>
-                        </div>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
-                            View Demo
-                        </button>
-
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">
-                            Details
-                        </button>
-                    </div>
-                </div>
-            </div>        
-
             </div>
         </div>
         <div class="py-10 text-center">
@@ -350,130 +231,6 @@
                 <span class="absolute inset-0 bg-amber-500/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
                 
                 <span class="relative">View All Projects</span>
-                <i class="fa-solid fa-arrow-right relative group-hover:translate-x-2 transition-transform"></i>
-            </a>
-        </div>
-    </section>
-    <div class="h-[1px] w-full bg-amber-600 backdrop-blur-lg"></div>
-    <!-- ================================================================================================================================== -->
-    <!-- Services Section -->
-    <section id="Services" class="pt-10 min-h-screen bg-black text-white">
-        <div class="container mx-auto px-6 py-12">
-            <!-- Title -->
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-amber-500">
-                    My Services
-                </h2>
-                <p class="text-gray-400 mt-2">
-                    What I can do for you
-                </p>
-            </div>
-            <!-- Grid -->
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-
-            <!-- Card 1 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[26rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="overflow-hidden h-56">
-                    <img src="./img/Prod1.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-                    <!-- Title + Price -->
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-lg font-semibold">Web Development</h3>
-                        <span class="text-amber-500 font-bold text-sm">$50</span>
-                    </div>
-                    <!-- Description -->
-                    <p class="text-gray-400 text-sm">I build responsive and modern websites with clean UI and fast performance.</p>
-                    <!-- ⭐ Rating (بديل الإعجابات) -->
-                    <div class="flex items-center gap-1 text-amber-400 text-sm">
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-regular fa-star"></i>
-                        <span class="text-gray-400 ml-2">(4.0)</span>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">Order Now</button>
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">Details</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[26rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="overflow-hidden h-56">
-                    <img src="./img/Prod1.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-                    <!-- Title + Price -->
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-lg font-semibold">Web Development</h3>
-                        <span class="text-amber-500 font-bold text-sm">$50</span>
-                    </div>
-                    <!-- Description -->
-                    <p class="text-gray-400 text-sm">I build responsive and modern websites with clean UI and fast performance.</p>
-                    <!-- ⭐ Rating (بديل الإعجابات) -->
-                    <div class="flex items-center gap-1 text-amber-400 text-sm">
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-regular fa-star"></i>
-                        <span class="text-gray-400 ml-2">(4.0)</span>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">Order Now</button>
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">Details</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-900/20 transition-all duration-300 group max-w-sm w-full min-h-[26rem] flex flex-col justify-between">
-                <!-- Image -->
-                <div class="overflow-hidden h-56">
-                    <img src="./img/Prod1.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                </div>
-                <!-- Content -->
-                <div class="p-6 flex flex-col gap-4 flex-1">
-                    <!-- Title + Price -->
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-lg font-semibold">Web Development</h3>
-                        <span class="text-amber-500 font-bold text-sm">$50</span>
-                    </div>
-                    <!-- Description -->
-                    <p class="text-gray-400 text-sm">I build responsive and modern websites with clean UI and fast performance.</p>
-                    <!-- ⭐ Rating (بديل الإعجابات) -->
-                    <div class="flex items-center gap-1 text-amber-400 text-sm">
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-regular fa-star"></i>
-                        <span class="text-gray-400 ml-2">(4.0)</span>
-                    </div>
-                    <!-- Buttons -->
-                    <div class="flex gap-3 mt-auto">
-                        <button class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">Order Now</button>
-                        <button class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition">Details</button>
-                    </div>
-                </div>
-            </div>        
-
-        </div>
-        </div>
-        <div class="py-10 text-center">
-            <a href="./services.html" class="group relative inline-flex items-center gap-3 px-8 py-4 bg-transparent border border-amber-500/50 text-amber-500 font-bold rounded-full overflow-hidden transition-all hover:border-amber-500 hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]">
-                <span class="absolute inset-0 bg-amber-500/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
-                
-                <span class="relative">View All Services</span>
                 <i class="fa-solid fa-arrow-right relative group-hover:translate-x-2 transition-transform"></i>
             </a>
         </div>
@@ -554,5 +311,6 @@
     <!-- Javascript -->
     <script type="module" src="./script/supabase.js"></script>
     <script src="./script/script.js"></script>
+    <script type="module" src="./script/indexProjects.js"></script>
 </body>
 </html>

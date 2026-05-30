@@ -172,6 +172,15 @@ function formatTime(dateString) {
     return date.toLocaleDateString();
 }
 
+function formatDate(dateString) {
+    if (!dateString) return "dd/mm/yyyy";
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
 async function loadProjectDetails() {
     if (!projectId) {
         commentsContainer.innerHTML = `
@@ -190,6 +199,9 @@ async function loadProjectDetails() {
             video_url,
             likes,
             created_at,
+            category,
+            level,
+            duration,
             project_media (
                 media_url,
                 media_type
@@ -217,6 +229,17 @@ async function loadProjectDetails() {
     projectTitle.textContent = data.title || "Project Title";
     projectDescription.textContent = data.description || "No description available.";
     projectLikes.textContent = data.likes ?? 0;
+
+    // Populate Overview Section
+    const categorySpan = document.getElementById("projectCategory");
+    const levelSpan = document.getElementById("projectLevel");
+    const durationSpan = document.getElementById("projectDuration");
+    const dateSpan = document.getElementById("projectDate");
+
+    if (categorySpan) categorySpan.textContent = data.category || "-";
+    if (levelSpan) levelSpan.textContent = data.level || "-";
+    if (durationSpan) durationSpan.textContent = data.duration || "-";
+    if (dateSpan) dateSpan.textContent = formatDate(data.created_at);
 
     if (data.video_url) {
         projectDemoBtn.href = data.video_url;
@@ -382,7 +405,7 @@ function renderComments(comments) {
                                 <span class="dislike-count">${dislikeCount}</span>
                             </button>
                             <button class="reply-btn hover:text-amber-400 transition flex items-center gap-1 ml-auto" data-comment-id="${c.id}">
-                                <i class="fa-regular fa-reply"></i>
+                                <i class="fa-solid fa-reply"></i>
                                 <span>Reply</span>
                             </button>
                         </div>
