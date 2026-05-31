@@ -4,13 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+
+    <!-- ═══ ADMIN AUTH GUARD — runs first, before any render ═══ -->
+    <script>
+        (function () {
+            var role      = localStorage.getItem("userRole");
+            var authed    = localStorage.getItem("adminAuthenticated");
+            var userId    = localStorage.getItem("userId");
+
+            // If not an authenticated admin, redirect immediately
+            if (role !== "admin" || authed !== "true" || !userId) {
+                // Clear any stale session data
+                localStorage.removeItem("adminAuthenticated");
+                window.location.replace("admin-login.html");
+            }
+        })();
+    </script>
+    <!-- ════════════════════════════════════════════════════════ -->
+
     <link rel="stylesheet" href="style/all.css">
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Javascript -->
+    <!-- Supabase module -->
     <script type="module" src="./script/supabase.js"></script>
+    <!-- Dashboard script module -->
     <script type="module" src="./script/dashboardscript.js"></script>
 </head>
 <body class="bg-black transition-opacity duration-500">
@@ -127,17 +147,20 @@
                         <h3 class="text-amber-400 text-lg font-semibold mb-4 text-center">Users</h3>
 
                         <table class="w-full text-sm text-center">
-                            <tr class="border-b border-gray-700 text-gray-300">
-                                <th class="py-2">Id</th>
-                                <th>Name</th>
-                                <th>Status</th>
-                            </tr>
-
-                            <tr class="hover:bg-gray-800 transition">
-                                <td class="py-2">1</td>
-                                <td>Tarek</td>
-                                <td class="text-green-400">Admin</td>
-                            </tr>
+                            <thead>
+                                <tr class="border-b border-gray-700 text-gray-300">
+                                    <th class="py-2">Id</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-800 transition">
+                                    <td class="py-2">1</td>
+                                    <td>Tarek</td>
+                                    <td class="text-green-400">Admin</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <!-- Projects -->
@@ -145,34 +168,40 @@
                         <h3 class="text-amber-400 text-lg font-semibold mb-4 text-center">Projects</h3>
 
                         <table class="w-full text-sm text-center">
-                            <tr class="border-b border-gray-700 text-gray-300">
-                                <th class="py-2">Id</th>
-                                <th>Name</th>
-                                <th>Skills</th>
-                            </tr>
-
-                            <tr class="hover:bg-gray-800 transition">
-                                <td class="py-2">1</td>
-                                <td>Website</td>
-                                <td class="text-blue-400">Full-Stack</td>
-                            </tr>
+                            <thead>
+                                <tr class="border-b border-gray-700 text-gray-300">
+                                    <th class="py-2">Id</th>
+                                    <th>Name</th>
+                                    <th>Skills</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-800 transition">
+                                    <td class="py-2">1</td>
+                                    <td>Website</td>
+                                    <td class="text-blue-400">Full-Stack</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <!-- Services -->
                     <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-md">
                         <h3 class="text-amber-400 text-lg font-semibold mb-4 text-center">Services</h3>
                         <table class="w-full text-sm text-center">
-                            <tr class="border-b border-gray-700 text-gray-300">
-                                <th class="py-2">Id</th>
-                                <th>Name</th>
-                                <th>Details</th>
-                            </tr>
-
-                            <tr class="hover:bg-gray-800 transition">
-                                <td class="py-2">1</td>
-                                <td>Create Website</td>
-                                <td class="text-gray-400">Full-stack website</td>
-                            </tr>
+                            <thead>
+                                <tr class="border-b border-gray-700 text-gray-300">
+                                    <th class="py-2">Id</th>
+                                    <th>Name</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-800 transition">
+                                    <td class="py-2">1</td>
+                                    <td>Create Website</td>
+                                    <td class="text-gray-400">Full-stack website</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -188,7 +217,7 @@
                         <p class="text-gray-400 text-sm">Control, edit and manage your projects</p>
                     </div>
 
-                    <button class="bg-yellow-600 hover:bg-yellow-500 text-black font-medium 
+                    <button id="add-project-btn" class="bg-yellow-600 hover:bg-yellow-500 text-black font-medium 
                                 py-2 px-5 rounded-lg transition shadow-md">
                         + Add Project
                     </button>
@@ -398,43 +427,17 @@
                         <thead>
                             <tr class="border-b border-gray-700 text-gray-300">
                                 <th class="py-3">Id</th>
-                                <th>Username</th>
+                                <th>Sender</th>
                                 <th class="text-left px-4">Details</th>
                                 <th>Date | Time</th>
                                 <th>Type</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         
                         <!-- Body -->
-                        <tbody>
-                            
-                            <tr class="border-b border-gray-800 hover:bg-gray-800 transition">
-                                <td class="py-3">1</td>
-                                <td class="font-medium">Tarek</td>
-                                <td class="text-left px-4 text-gray-300">
-                                    I wanna make a website
-                                </td>
-                                <td class="text-gray-400">19/3/2026 | 4:12 PM</td>
-                                <td>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-600/20 text-blue-400">
-                                        Comment
-                                    </span>
-                                </td>
-                            </tr>
-                            
-                            <tr class="hover:bg-gray-800 transition">
-                                <td class="py-3">2</td>
-                                <td class="font-medium">Tarek</td>
-                                <td class="text-left px-4 text-gray-300">
-                                    I wanna make a desktop application
-                                </td>
-                                <td class="text-gray-400">19/3/2026 | 4:15 PM</td>
-                                <td>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-600/20 text-green-400">
-                                        Message
-                                    </span>
-                                </td>
-                            </tr>
+                        <tbody id="interactions-tbody">
+                            <!-- Dynamically loaded interactions will go here -->
                         </tbody>
                     </table>
                 </div>
@@ -443,15 +446,14 @@
             <!-- ============================================================================================================================= -->
             <!-- users-page -->
             <div id="users-content" class="absolute inset-0 p-6 hidden transition-all duration-300 text-white">
-                
-                <!-- Header -->
+                            <!-- Header -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <div>
                         <h2 class="text-2xl font-bold text-yellow-600">Users Management</h2>
                         <p class="text-gray-400 text-sm">Manage and control your users</p>
                     </div>
                     
-                    <button class="text-white hover:text-yellow-600 bg-yellow-600 hover:bg-gray-200 border border-yellow-600 transition py-2 px-4 rounded-lg">Add Users</button>
+                    <button id="add-user-btn" class="text-white hover:text-yellow-600 bg-yellow-600 hover:bg-gray-200 border border-yellow-600 transition py-2 px-4 rounded-lg">Add Users</button>
                 </div>
                 
                 <!-- Table Card -->
@@ -471,57 +473,10 @@
                         </thead>
                         
                         <!-- Body -->
-                        <tbody>
-                            
-                            <tr class="border-b border-gray-800 hover:bg-gray-800 transition">
-                                <td class="py-3">1</td>
-                                <td class="font-medium">Tarek</td>
-                                <td class="text-gray-400">tarek@mail.com</td>
-                                
-                                <!-- Role -->
-                                <td>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium 
-                                    bg-green-600/20 text-green-400">
-                                    Admin
-                                </span>
-                            </td>
-                            
-                            <!-- Actions -->
-                            <td class="flex justify-center gap-3">
-                                <button class="text-blue-400 hover:text-blue-300 transition">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-400 hover:text-red-300 transition">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            
-                            <tr class="hover:bg-gray-800 transition">
-                                <td class="py-3">2</td>
-                                <td class="font-medium">Ahmed</td>
-                                <td class="text-gray-400">ahmed@mail.com</td>
-                                
-                                <td>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium 
-                                    bg-yellow-600/20 text-yellow-400">
-                                    User
-                                </span>
-                            </td>
-                            
-                            <td class="flex justify-center gap-3">
-                                <button class="text-blue-400 hover:text-blue-300 transition">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-400 hover:text-red-300 transition">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        
-                    </tbody>
-                    
-                </table>
+                        <tbody id="users-tbody">
+                            <!-- Dynamic users go here -->
+                        </tbody>
+                    </table>
                 
             </div>
             
@@ -639,6 +594,169 @@
                         <button type="button" id="delete-no" class="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition">Cancel</button>
                         <button type="button" id="delete-yes" class="px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">Delete</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Add Project Modal -->
+            <div id="add-project-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                <div class="bg-gray-900 text-white rounded-xl p-8 w-full max-w-2xl mx-4 shadow-2xl border border-gray-700 overflow-auto max-h-[90vh]">
+                    <h3 class="text-2xl font-bold mb-6">Add New Project</h3>
+                    <form id="add-project-form" class="flex flex-col gap-5">
+                        
+                        <!-- Title -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Project Title *</label>
+                            <input type="text" id="add-title" placeholder="Enter project title" required
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Description *</label>
+                            <textarea id="add-description" placeholder="Enter project description" rows="4" required
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-none"></textarea>
+                        </div>
+
+                        <!-- Category & Level -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Category *</label>
+                                <input type="text" id="add-category" placeholder="e.g., Web, Mobile" required
+                                    class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Level *</label>
+                                <select id="add-level" required
+                                    class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                    <option value="">Select Level</option>
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
+                                    <option value="Expert">Expert</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Duration -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Duration *</label>
+                            <input type="text" id="add-duration" placeholder="e.g., 3 months" required
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Main Image -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Main Image (URL or Upload) *</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="add-main-image" placeholder="Paste image URL or upload below" required
+                                    class="flex-1 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                <input type="file" id="add-image-upload" accept="image/*"
+                                    class="hidden">
+                                <button type="button" id="upload-btn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                                    Upload
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Video URL -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Video URL (Optional) - Only for media preview</label>
+                            <input type="url" id="add-video-url" placeholder="https://example.com/video"
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Live Demo URL -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Live Demo URL (View Live URL)</label>
+                            <input type="url" id="add-demo-url" placeholder="https://example.com/demo"
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Preview Images -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Preview Images (Comma-separated URLs)</label>
+                            <textarea id="add-preview-images" placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg" rows="3"
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-none"></textarea>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button type="button" id="add-cancel" class="px-6 py-2.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-6 py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-black font-medium transition">
+                                Create Project
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add/Edit User Modal -->
+            <div id="user-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                <div class="bg-gray-900 text-white rounded-xl p-8 w-full max-w-lg mx-4 shadow-2xl border border-gray-700 overflow-auto max-h-[90vh]">
+                    <h3 id="user-modal-title" class="text-2xl font-bold mb-6">Add New User</h3>
+                    <form id="user-form" class="flex flex-col gap-5">
+                        
+                        <!-- Name -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Full Name *</label>
+                            <input type="text" id="user-name-input" placeholder="Enter full name" required
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Email Address *</label>
+                            <input type="email" id="user-email-input" placeholder="Enter email address" required
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Password *</label>
+                            <input type="text" id="user-password-input" placeholder="Enter password" required
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Role & Gender -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Role *</label>
+                                <select id="user-role-input" required
+                                    class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Gender</label>
+                                <select id="user-gender-input"
+                                    class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Avatar URL -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Avatar Image (URL or default placeholder)</label>
+                            <input type="text" id="user-avatar-input" placeholder="e.g., ./img/Avatar1.png"
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button type="button" id="user-cancel" class="px-6 py-2.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-6 py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-black font-medium transition">
+                                Save User
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </main>

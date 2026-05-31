@@ -27,7 +27,7 @@ async function getProjectStats(projectId) {
 
 async function loadTopProjects() {
     try {
-        // Fetch projects ordered by created_at
+        // Fetch projects ordered by created_at, filtered by is_visible = true
         const { data: projects, error } = await supabase
             .from("products")
             .select(`
@@ -36,11 +36,13 @@ async function loadTopProjects() {
                 description,
                 main_image,
                 video_url,
+                demo_url,
                 created_at,
                 project_media (
                     media_url
                 )
             `)
+            .eq("is_visible", true)
             .order("created_at", { ascending: false });
 
         if (error) {
@@ -127,7 +129,7 @@ function renderProjects(projects) {
                     </div>
                     <!-- Buttons -->
                     <div class="flex gap-3 mt-auto">
-                        <a href="./ProductDetails.html?id=${project.id}" class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition text-center font-medium">
+                        <a href="${project.demo_url || '#'}" target="_blank" class="flex-1 bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition text-center font-medium ${project.demo_url ? '' : 'pointer-events-none opacity-50'}">
                             View Demo
                         </a>
                         <a href="./ProductDetails.html?id=${project.id}" class="flex-1 border border-amber-500 py-2 rounded-lg hover:bg-amber-500 hover:text-black transition text-center font-medium">

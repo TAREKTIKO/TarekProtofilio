@@ -39,12 +39,14 @@ async function loadProjects() {
                 description,
                 main_image,
                 video_url,
+                demo_url,
                 likes,
                 created_at,
                 project_media (
                     media_url
                 )
             `)
+            .eq("is_visible", true)
             .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -117,8 +119,8 @@ function renderProjects(projects) {
                 </div>
 
                 <div class="flex gap-3 mt-auto">
-                    <a href="${project.video_url || '#'}" target="_blank"
-                        class="flex-1 text-center bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition">
+                    <a href="${project.demo_url || '#'}" target="_blank"
+                        class="flex-1 text-center bg-amber-500 text-black py-2 rounded-lg hover:bg-amber-400 transition ${project.demo_url ? '' : 'pointer-events-none opacity-50'}">
                         View Demo
                     </a>
 
