@@ -303,7 +303,7 @@ async function loadProjectDetails() {
     const title = data.title || "Project Title";
     projectTitle.textContent = title;
     if (projectPageTitle) projectPageTitle.textContent = title;
-    document.title = `${title} | Project Details`;
+    document.title = `${title} `;
     setExpandableDescription(projectDescription, data.description);
     projectLikes.textContent = data.likes ?? 0;
 
