@@ -6,6 +6,7 @@ const projectId = params.get("id");
 const projectMainImage = document.getElementById("projectMainImage");
 const projectTitle = document.getElementById("projectTitle");
 const projectDescription = document.getElementById("projectDescription");
+const projectPageTitle = document.getElementById("projectPageTitle");
 const projectLikes = document.getElementById("projectLikes");
 const projectDemoBtn = document.getElementById("projectDemoBtn");
 
@@ -28,6 +29,42 @@ let currentUser = null;
 let currentProject = null;
 let isLiked = false;
 let allComments = [];
+
+const DESCRIPTION_LIMIT = 220;
+
+function setExpandableDescription(element, description) {
+    if (!element) return;
+
+    const fullDescription = description || "No description available.";
+    element.textContent = "";
+    element.classList.add("max-h-32", "overflow-y-auto", "pr-2");
+
+    const text = document.createElement("span");
+    const toggle = document.createElement("button");
+
+    if (fullDescription.length <= DESCRIPTION_LIMIT) {
+        text.textContent = fullDescription;
+        element.appendChild(text);
+        return;
+    }
+
+    const shortDescription = `${fullDescription.slice(0, DESCRIPTION_LIMIT).trim()}...`;
+    text.textContent = shortDescription;
+
+    toggle.type = "button";
+    toggle.className = "ml-1 text-amber-500 hover:text-amber-400 font-semibold";
+    toggle.textContent = "Show more";
+    toggle.dataset.expanded = "false";
+
+    toggle.addEventListener("click", () => {
+        const isExpanded = toggle.dataset.expanded === "true";
+        text.textContent = isExpanded ? shortDescription : fullDescription;
+        toggle.textContent = isExpanded ? "Show more" : "Show less";
+        toggle.dataset.expanded = String(!isExpanded);
+    });
+
+    element.append(text, toggle);
+}
 
 async function getCurrentUser() {
     try {
@@ -263,8 +300,11 @@ async function loadProjectDetails() {
         "./img/Prod1.png";
 
     projectMainImage.src = image;
-    projectTitle.textContent = data.title || "Project Title";
-    projectDescription.textContent = data.description || "No description available.";
+    const title = data.title || "Project Title";
+    projectTitle.textContent = title;
+    if (projectPageTitle) projectPageTitle.textContent = title;
+    document.title = `${title} | Project Details`;
+    setExpandableDescription(projectDescription, data.description);
     projectLikes.textContent = data.likes ?? 0;
 
     // Populate Overview Section

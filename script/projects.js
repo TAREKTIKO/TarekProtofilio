@@ -6,6 +6,33 @@ const loader = document.getElementById("pageLoader");
 
 let allProjects = [];
 
+const DESCRIPTION_LIMIT = 120;
+
+function escapeHTML(value = "") {
+    const div = document.createElement("div");
+    div.textContent = value;
+    return div.innerHTML;
+}
+
+function getExpandableDescription(description) {
+    const fullDescription = description || "Short description about the project goes here...";
+
+    if (fullDescription.length <= DESCRIPTION_LIMIT) {
+        return escapeHTML(fullDescription);
+    }
+
+    const shortDescription = `${fullDescription.slice(0, DESCRIPTION_LIMIT).trim()}...`;
+
+    return `
+        <span class="description-text"
+            data-short="${escapeHTML(shortDescription)}"
+            data-full="${escapeHTML(fullDescription)}">${escapeHTML(shortDescription)}</span>
+        <button type="button" class="description-toggle ml-1 text-amber-500 hover:text-amber-400 font-semibold">
+            Show more
+        </button>
+    `;
+}
+
 async function getProjectStats(projectId) {
     try {
         const [likesResponse, commentsResponse] = await Promise.all([
@@ -102,8 +129,8 @@ function renderProjects(projects) {
             <div class="p-6 flex flex-col gap-4 flex-1">
                 <h3 class="text-lg font-semibold">${project.title || "Project Title"}</h3>
 
-                <p class="text-gray-400 text-sm">
-                    ${project.description || "Short description about the project goes here..."}
+                <p class="project-description text-gray-400 text-sm leading-relaxed min-h-[4.5rem] max-h-[4.5rem] overflow-y-auto pr-1">
+                    ${getExpandableDescription(project.description)}
                 </p>
 
                 <div class="flex items-center gap-6 text-sm text-gray-400 mt-2">
@@ -135,6 +162,20 @@ function renderProjects(projects) {
         container.appendChild(card);
     });
 }
+
+container.addEventListener("click", (event) => {
+    const toggle = event.target.closest(".description-toggle");
+    if (!toggle) return;
+
+    const description = toggle.closest(".project-description");
+    const text = description?.querySelector(".description-text");
+    if (!description || !text) return;
+
+    const isExpanded = toggle.dataset.expanded === "true";
+    text.textContent = isExpanded ? text.dataset.short : text.dataset.full;
+    toggle.textContent = isExpanded ? "Show more" : "Show less";
+    toggle.dataset.expanded = String(!isExpanded);
+});
 
 function initializeSorting() {
     sortSelect.addEventListener("change", () => {
