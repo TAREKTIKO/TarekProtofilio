@@ -203,21 +203,35 @@
             </div>
 
             <!-- Media Section -->
-            <div class="mt-10 bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-5">
+            <div class="mt-10 bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg">
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-5">
                     <h3 class="text-xl font-semibold text-white">Preview Media</h3>
                     <p class="text-sm text-gray-400">Video first, then images</p>
                 </div>
 
-                <div class="overflow-x-auto scrollbar-hide">
-                    <div id="mediaPreviewContainer" class="flex gap-4 w-max pb-2"></div>
+                <div class="relative">
+                    <button id="mediaPrevBtn" type="button"
+                        class="lg:hidden absolute left-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-amber-500/70 bg-black/80 text-amber-400 shadow-lg backdrop-blur transition hover:bg-amber-500 hover:text-black disabled:pointer-events-none disabled:opacity-30"
+                        aria-label="Previous media">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    <div id="mediaScroller" class="overflow-x-auto scroll-smooth scrollbar-hide">
+                        <div id="mediaPreviewContainer" class="flex w-max max-w-full gap-4 pb-2"></div>
+                    </div>
+
+                    <button id="mediaNextBtn" type="button"
+                        class="lg:hidden absolute right-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-amber-500/70 bg-black/80 text-amber-400 shadow-lg backdrop-blur transition hover:bg-amber-500 hover:text-black disabled:pointer-events-none disabled:opacity-30"
+                        aria-label="Next media">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
 
             <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
             <!-- Comments -->
-            <div class="mt-10 bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-6">
+            <div class="mt-10 bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg">
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-6">
                     <h3 class="text-xl font-semibold text-white">
                         Comments <span class="text-amber-500">(0)</span>
                     </h3>
@@ -229,13 +243,13 @@
                     <div class="grid gap-3">
                         <h4 class="text-sm font-semibold text-amber-500 mb-3">Add a comment</h4>
 
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <input id="commentInput" type="text"
                                 placeholder="Write your comment..."
-                                class="flex-1 p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-amber-500">
+                                class="w-full min-w-0 flex-1 p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-amber-500">
 
                             <button id="addCommentBtn"
-                                class="px-5 py-3 bg-amber-500 text-black rounded-xl hover:bg-amber-400 transition font-semibold">
+                                class="w-full shrink-0 px-5 py-3 bg-amber-500 text-black rounded-xl hover:bg-amber-400 transition font-semibold sm:w-auto sm:min-w-24">
                                 Post
                             </button>
                         </div>
@@ -249,6 +263,37 @@
         </div>
     </section>
 
+
+    <!-- Media Modal -->
+    <div id="mediaModal" class="fixed inset-0 z-[9998] hidden items-center justify-center bg-black/85 px-4 py-6 backdrop-blur-sm">
+        <div class="relative flex h-full w-full max-w-5xl flex-col">
+            <div class="mb-3 flex items-center justify-between gap-3 text-white">
+                <span id="mediaCounter" class="rounded-full border border-gray-700 bg-gray-900 px-4 py-2 text-sm font-semibold text-amber-400">1/1</span>
+
+                <button id="closeMediaModal" type="button"
+                    class="flex h-11 w-11 items-center justify-center rounded-full border border-gray-700 bg-gray-900 text-white transition hover:border-red-400 hover:text-red-400"
+                    aria-label="Close media viewer">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="relative min-h-0 flex-1">
+                <button id="modalPrevBtn" type="button"
+                    class="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-amber-500/70 bg-black/80 text-amber-400 shadow-lg transition hover:bg-amber-500 hover:text-black disabled:pointer-events-none disabled:opacity-30"
+                    aria-label="Previous media">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+
+                <div id="mediaModalContent" class="flex h-full items-center justify-center overflow-hidden rounded-2xl border border-gray-800 bg-black"></div>
+
+                <button id="modalNextBtn" type="button"
+                    class="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-amber-500/70 bg-black/80 text-amber-400 shadow-lg transition hover:bg-amber-500 hover:text-black disabled:pointer-events-none disabled:opacity-30"
+                    aria-label="Next media">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Share Modal -->
     <div id="shareModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
@@ -277,7 +322,7 @@
     <!-- ================================================================================================================================== -->
     <!-- Loader -->
     <div id="pageLoader" 
-        class="fixed inset-0 bg-black flex items-center justify-center z-[9999] hidden">
+        class="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
 
         <div class="flex flex-col items-center gap-4">
             

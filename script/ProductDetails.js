@@ -15,6 +15,15 @@ const commentInput = document.getElementById("commentInput");
 const addCommentBtn = document.getElementById("addCommentBtn");
 const pageLoader = document.getElementById("pageLoader");
 const commentCountSpan = document.querySelector("h3 .text-amber-500");
+const mediaScroller = document.getElementById("mediaScroller");
+const mediaPrevBtn = document.getElementById("mediaPrevBtn");
+const mediaNextBtn = document.getElementById("mediaNextBtn");
+const mediaModal = document.getElementById("mediaModal");
+const mediaModalContent = document.getElementById("mediaModalContent");
+const mediaCounter = document.getElementById("mediaCounter");
+const closeMediaModal = document.getElementById("closeMediaModal");
+const modalPrevBtn = document.getElementById("modalPrevBtn");
+const modalNextBtn = document.getElementById("modalNextBtn");
 
 const likeBtn = document.getElementById("likeBtn");
 const likeIcon = document.getElementById("likeIcon");
@@ -29,8 +38,50 @@ let currentUser = null;
 let currentProject = null;
 let isLiked = false;
 let allComments = [];
+let isSubmittingComment = false;
+let mediaItems = [];
+let activeMediaIndex = 0;
 
 const DESCRIPTION_LIMIT = 220;
+
+function setPageLoading(isLoading) {
+    pageLoader?.classList.toggle("hidden", !isLoading);
+}
+
+function updateMediaArrows() {
+    if (!mediaScroller || !mediaPrevBtn || !mediaNextBtn) return;
+
+    const maxScrollLeft = mediaScroller.scrollWidth - mediaScroller.clientWidth;
+    const canScroll = maxScrollLeft > 4;
+
+    mediaPrevBtn.classList.toggle("hidden", !canScroll);
+    mediaNextBtn.classList.toggle("hidden", !canScroll);
+
+    mediaPrevBtn.disabled = !canScroll || mediaScroller.scrollLeft <= 4;
+    mediaNextBtn.disabled = !canScroll || mediaScroller.scrollLeft >= maxScrollLeft - 4;
+}
+
+function scrollMedia(direction) {
+    if (!mediaScroller) return;
+
+    const scrollAmount = Math.max(mediaScroller.clientWidth * 0.82, 260);
+    mediaScroller.scrollBy({
+        left: direction * scrollAmount,
+        behavior: "smooth",
+    });
+
+    window.setTimeout(updateMediaArrows, 250);
+}
+
+function setAddCommentLoading(isLoading) {
+    if (!addCommentBtn) return;
+
+    isSubmittingComment = isLoading;
+    addCommentBtn.disabled = isLoading || !currentUser;
+    addCommentBtn.textContent = isLoading ? "Posting..." : "Post";
+    addCommentBtn.classList.toggle("opacity-60", isLoading);
+    addCommentBtn.classList.toggle("cursor-wait", isLoading);
+}
 
 function setExpandableDescription(element, description) {
     if (!element) return;
@@ -101,9 +152,10 @@ function getStoredUserProfile() {
 function setCommentButtonState(enabled) {
     if (!addCommentBtn || !commentInput) return;
 
-    addCommentBtn.disabled = !enabled;
+    addCommentBtn.disabled = !enabled || isSubmittingComment;
     addCommentBtn.classList.toggle("opacity-50", !enabled);
     addCommentBtn.classList.toggle("cursor-not-allowed", !enabled);
+    commentInput.disabled = isSubmittingComment;
     commentInput.placeholder = enabled ? "Write your comment..." : "Sign in first to comment...";
 }
 
@@ -195,8 +247,15 @@ async function resolveCurrentUser() {
 }
 
 function formatTime(dateString) {
-    const date = new Date(dateString);
-    const diffMs = Date.now() - date.getTime();
+    if (!dateString) return "Just now";
+
+    const hasTimezone = /(?:z|[+-]\d{2}:?\d{2})$/i.test(dateString);
+    const normalizedDateString = hasTimezone ? dateString : `${dateString}Z`;
+    const date = new Date(normalizedDateString);
+
+    if (Number.isNaN(date.getTime())) return "Just now";
+
+    const diffMs = Math.max(0, Date.now() - date.getTime());
     const diffMinutes = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
@@ -218,40 +277,94 @@ function formatDate(dateString) {
     return `${day}/${month}/${year}`;
 }
 
-function getEmbedVideoHTML(videoUrl) {
-    if (!videoUrl) return "";
+function getVideoEmbedSrc(videoUrl) {
+    if (!videoUrl) return null;
 
     // YouTube regexes
     const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/;
     const ytMatch = videoUrl.match(ytRegex);
     if (ytMatch && ytMatch[1]) {
-        return `
-            <div class="w-[320px] md:w-[420px] shrink-0 rounded-2xl overflow-hidden border border-gray-800 bg-black h-56">
-                <iframe src="https://www.youtube.com/embed/${ytMatch[1]}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        `;
+        return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
     }
 
     // Vimeo regex
     const vimeoRegex = /vimeo\.com\/(?:video\/)?([0-9]+)/;
     const vimeoMatch = videoUrl.match(vimeoRegex);
     if (vimeoMatch && vimeoMatch[1]) {
-        return `
-            <div class="w-[320px] md:w-[420px] shrink-0 rounded-2xl overflow-hidden border border-gray-800 bg-black h-56">
-                <iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" class="w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        `;
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
     }
 
-    // Direct MP4/WebM video
+    return null;
+}
+
+function getEmbedVideoHTML(videoUrl, index) {
+    if (!videoUrl) return "";
+
     return `
-        <div class="w-[320px] md:w-[420px] shrink-0 rounded-2xl overflow-hidden border border-gray-800 bg-black h-56">
-            <video controls class="w-full h-full object-cover">
+        <button type="button" data-media-index="${index}"
+            class="media-open-btn group relative h-48 w-[78vw] max-w-[320px] shrink-0 overflow-hidden rounded-2xl border border-gray-800 bg-black text-white transition duration-300 hover:scale-[1.02] sm:h-56 sm:w-[340px] md:w-[420px]"
+            aria-label="Open video preview">
+            <video muted playsinline preload="metadata" class="h-full w-full object-cover opacity-70">
                 <source src="${videoUrl}" type="video/mp4">
-                Your browser does not support the video tag.
             </video>
-        </div>
+            <span class="absolute inset-0 flex items-center justify-center bg-black/20">
+                <span class="flex h-14 w-14 items-center justify-center rounded-full bg-amber-500 text-black shadow-lg transition group-hover:bg-amber-400">
+                    <i class="fa-solid fa-play text-xl"></i>
+                </span>
+            </span>
+        </button>
     `;
+}
+
+function renderMediaModal() {
+    const item = mediaItems[activeMediaIndex];
+    if (!item || !mediaModalContent) return;
+
+    if (mediaCounter) {
+        mediaCounter.textContent = `${activeMediaIndex + 1}/${mediaItems.length}`;
+    }
+
+    if (modalPrevBtn) modalPrevBtn.disabled = mediaItems.length <= 1;
+    if (modalNextBtn) modalNextBtn.disabled = mediaItems.length <= 1;
+
+    if (item.type === "video") {
+        const embedSrc = getVideoEmbedSrc(item.url);
+
+        mediaModalContent.innerHTML = embedSrc
+            ? `<iframe src="${embedSrc}" class="h-full min-h-[260px] w-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`
+            : `<video controls autoplay class="max-h-full w-full object-contain"><source src="${item.url}" type="video/mp4">Your browser does not support the video tag.</video>`;
+        return;
+    }
+
+    mediaModalContent.innerHTML = `
+        <img src="${item.url}" alt="Preview media ${activeMediaIndex + 1}" class="max-h-full max-w-full object-contain">
+    `;
+}
+
+function openMediaModal(index) {
+    if (!mediaItems.length || !mediaModal) return;
+
+    activeMediaIndex = Math.min(Math.max(index, 0), mediaItems.length - 1);
+    renderMediaModal();
+    mediaModal.classList.remove("hidden");
+    mediaModal.classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+}
+
+function closeMediaViewer() {
+    if (!mediaModal || !mediaModalContent) return;
+
+    mediaModal.classList.add("hidden");
+    mediaModal.classList.remove("flex");
+    mediaModalContent.innerHTML = "";
+    document.body.classList.remove("overflow-hidden");
+}
+
+function showAdjacentMedia(direction) {
+    if (!mediaItems.length) return;
+
+    activeMediaIndex = (activeMediaIndex + direction + mediaItems.length) % mediaItems.length;
+    renderMediaModal();
 }
 
 async function loadProjectDetails() {
@@ -331,31 +444,44 @@ async function loadProjectDetails() {
     const mediaContainer = document.getElementById("mediaPreviewContainer");
     if (mediaContainer) {
         mediaContainer.innerHTML = "";
-        let hasMedia = false;
+        mediaItems = [];
 
         // Render video if available
         if (data.video_url) {
-            mediaContainer.innerHTML += getEmbedVideoHTML(data.video_url);
-            hasMedia = true;
+            mediaItems.push({ type: "video", url: data.video_url });
         }
 
         // Render preview images from project_media
         if (data.project_media && data.project_media.length > 0) {
-            data.project_media.forEach((media, idx) => {
+            data.project_media.forEach((media) => {
                 if (media.media_url) {
-                    mediaContainer.innerHTML += `
-                        <img src="${media.media_url}" alt="preview ${idx + 1}"
-                            class="w-[320px] md:w-[420px] h-56 shrink-0 rounded-2xl object-cover border border-gray-800 cursor-pointer hover:scale-[1.02] transition duration-300"
-                            onclick="window.open('${media.media_url}', '_blank')">
-                    `;
-                    hasMedia = true;
+                    mediaItems.push({
+                        type: media.media_type === "video" ? "video" : "image",
+                        url: media.media_url,
+                    });
                 }
             });
         }
 
-        if (!hasMedia) {
+        if (!mediaItems.length) {
             mediaContainer.innerHTML = `<p class="text-gray-400 text-sm">No preview media available for this project.</p>`;
+        } else {
+            mediaContainer.innerHTML = mediaItems.map((item, index) => {
+                if (item.type === "video") {
+                    return getEmbedVideoHTML(item.url, index);
+                }
+
+                return `
+                    <button type="button" data-media-index="${index}"
+                        class="media-open-btn h-48 w-[78vw] max-w-[320px] shrink-0 overflow-hidden rounded-2xl border border-gray-800 transition duration-300 hover:scale-[1.02] sm:h-56 sm:w-[340px] md:w-[420px]"
+                        aria-label="Open image preview ${index + 1}">
+                        <img src="${item.url}" alt="preview ${index + 1}" class="h-full w-full object-cover">
+                    </button>
+                `;
+            }).join("");
         }
+
+        requestAnimationFrame(updateMediaArrows);
     }
 
     if (shareLink) {
@@ -473,15 +599,15 @@ function renderComments(comments) {
             const replyName = reply.users?.name || "User";
             const replyTime = formatTime(reply.created_at);
             return `
-                <div class="bg-gray-900 rounded-lg p-3 ml-8 border border-gray-800 mt-2">
+                <div class="bg-gray-900 rounded-lg p-3 sm:ml-8 border border-gray-800 mt-2">
                     <div class="flex items-start gap-2">
-                        <img src="${replyAvatar}" alt="user" class="w-8 h-8 rounded-full object-cover border border-gray-700">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <h5 class="font-semibold text-sm">${replyName}</h5>
-                                <span class="text-xs text-gray-500">${replyTime}</span>
+                        <img src="${replyAvatar}" alt="user" class="w-8 h-8 shrink-0 rounded-full object-cover border border-gray-700">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                <h5 class="break-words font-semibold text-sm">${replyName}</h5>
+                                <span class="shrink-0 text-xs text-gray-500">${replyTime}</span>
                             </div>
-                            <p class="text-gray-300 text-sm mt-1">${reply.reply_text}</p>
+                            <p class="break-words text-gray-300 text-sm mt-1">${reply.reply_text}</p>
                         </div>
                     </div>
                 </div>
@@ -489,22 +615,22 @@ function renderComments(comments) {
         }).join("");
 
         return `
-            <div class="bg-gray-950 border border-gray-800 rounded-2xl p-5" data-comment-id="${c.id}">
-                <div class="flex items-start gap-4">
-                    <img src="${avatar}" alt="user" class="w-12 h-12 rounded-full object-cover border border-gray-700">
-                    <div class="flex-1">
+            <div class="bg-gray-950 border border-gray-800 rounded-2xl p-4 sm:p-5" data-comment-id="${c.id}">
+                <div class="flex items-start gap-3 sm:gap-4">
+                    <img src="${avatar}" alt="user" class="w-10 h-10 shrink-0 rounded-full object-cover border border-gray-700 sm:w-12 sm:h-12">
+                    <div class="min-w-0 flex-1">
                         <div class="flex items-center justify-between gap-4">
-                            <div>
-                                <h4 class="font-semibold">${name}</h4>
+                            <div class="min-w-0">
+                                <h4 class="break-words font-semibold">${name}</h4>
                                 <p class="text-xs text-gray-500">${time}</p>
                             </div>
                         </div>
 
-                        <p class="comment-text text-gray-300 mt-3 leading-relaxed">
+                        <p class="comment-text break-words text-gray-300 mt-3 leading-relaxed">
                             ${c.comment_text}
                         </p>
 
-                        <div class="mt-3 flex items-center gap-3 text-sm text-gray-400">
+                        <div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-400">
                             <button class="comment-like-btn hover:text-red-400 transition flex items-center gap-1" data-comment-id="${c.id}" data-like-id="${userLikeId || ''}">
                                 <i class="fa-${userLikeId ? 'solid' : 'regular'} fa-heart"></i>
                                 <span class="like-count">${likeCount}</span>
@@ -513,7 +639,7 @@ function renderComments(comments) {
                                 <i class="fa-${userDislikeId ? 'solid' : 'regular'} fa-thumbs-down"></i>
                                 <span class="dislike-count">${dislikeCount}</span>
                             </button>
-                            <button class="reply-btn hover:text-amber-400 transition flex items-center gap-1 ml-auto" data-comment-id="${c.id}">
+                            <button class="reply-btn hover:text-amber-400 transition flex items-center gap-1 sm:ml-auto" data-comment-id="${c.id}">
                                 <i class="fa-solid fa-reply"></i>
                                 <span>Reply</span>
                             </button>
@@ -522,9 +648,9 @@ function renderComments(comments) {
                         ${repliesHTML ? `<div class="mt-4 space-y-2">${repliesHTML}</div>` : ''}
 
                         <div class="reply-form hidden mt-3" data-comment-id="${c.id}">
-                            <div class="flex gap-2">
-                                <input type="text" class="reply-input flex-1 p-2 rounded-lg bg-gray-800 text-white border border-gray-700 text-sm" placeholder="Write a reply...">
-                                <button class="send-reply-btn px-3 py-2 bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition text-sm font-semibold">Send</button>
+                            <div class="flex flex-col gap-2 sm:flex-row">
+                                <input type="text" class="reply-input w-full min-w-0 flex-1 p-2 rounded-lg bg-gray-800 text-white border border-gray-700 text-sm" placeholder="Write a reply...">
+                                <button class="send-reply-btn w-full shrink-0 px-3 py-2 bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition text-sm font-semibold sm:w-auto">Send</button>
                             </div>
                         </div>
                     </div>
@@ -536,7 +662,7 @@ function renderComments(comments) {
 
 async function addComment() {
     const text = commentInput.value.trim();
-    if (!text) return;
+    if (!text || isSubmittingComment) return;
 
     currentUser = currentUser || await resolveCurrentUser();
 
@@ -550,25 +676,32 @@ async function addComment() {
         return;
     }
 
-    const { error } = await supabase.from("comments").insert({
-        user_id: currentUser.id,
-        product_id: projectId,
-        comment_text: text,
-        likes: 0,
-        dislikes: 0
-    });
+    setAddCommentLoading(true);
 
-    if (error) {
-        console.error("Add comment error:", error);
-        const msg = error.message?.includes("row-level security") 
-            ? "Database permission error. Check RLS policies on comments table."
-            : "Failed to add comment.";
-        alert(msg);
-        return;
+    try {
+        const { error } = await supabase.from("comments").insert({
+            user_id: currentUser.id,
+            product_id: projectId,
+            comment_text: text,
+            likes: 0,
+            dislikes: 0
+        });
+
+        if (error) {
+            console.error("Add comment error:", error);
+            const msg = error.message?.includes("row-level security") 
+                ? "Database permission error. Check RLS policies on comments table."
+                : "Failed to add comment.";
+            alert(msg);
+            return;
+        }
+
+        commentInput.value = "";
+        await loadComments();
+    } finally {
+        setAddCommentLoading(false);
+        setCommentButtonState(!!currentUser);
     }
-
-    commentInput.value = "";
-    await loadComments();
 }
 
 // Handle comment like/dislike, replies via event delegation
@@ -845,15 +978,19 @@ async function copyShareLink() {
 }
 
 async function init() {
-    pageLoader?.classList.add("hidden");
+    setPageLoading(true);
 
-    currentUser = await resolveCurrentUser();
-    setCommentButtonState(!!currentUser);
+    try {
+        currentUser = await resolveCurrentUser();
+        setCommentButtonState(!!currentUser);
 
-    await loadProjectDetails();
-    await loadComments();
-    await updateLikesCount();
-    await refreshLikeState();
+        await loadProjectDetails();
+        await loadComments();
+        await updateLikesCount();
+        await refreshLikeState();
+    } finally {
+        setPageLoading(false);
+    }
 }
 
 // Listen to auth state changes to enable/disable comment controls and refresh like state.
@@ -865,8 +1002,45 @@ if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChange === "fun
     });
 }
 
-addCommentBtn.addEventListener("click", addComment);
-likeBtn.addEventListener("click", likeProject);
+addCommentBtn?.addEventListener("click", addComment);
+commentInput?.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" || event.shiftKey) return;
+    event.preventDefault();
+    addComment();
+});
+likeBtn?.addEventListener("click", likeProject);
+
+mediaPrevBtn?.addEventListener("click", () => scrollMedia(-1));
+mediaNextBtn?.addEventListener("click", () => scrollMedia(1));
+mediaScroller?.addEventListener("scroll", updateMediaArrows);
+mediaScroller?.addEventListener("click", (event) => {
+    const openButton = event.target.closest(".media-open-btn");
+    if (!openButton) return;
+
+    openMediaModal(Number(openButton.dataset.mediaIndex || 0));
+});
+window.addEventListener("resize", updateMediaArrows);
+
+closeMediaModal?.addEventListener("click", closeMediaViewer);
+modalPrevBtn?.addEventListener("click", () => showAdjacentMedia(-1));
+modalNextBtn?.addEventListener("click", () => showAdjacentMedia(1));
+mediaModal?.addEventListener("click", (event) => {
+    if (event.target === mediaModal) {
+        closeMediaViewer();
+    }
+});
+
+document.addEventListener("keydown", (event) => {
+    if (!mediaModal || mediaModal.classList.contains("hidden")) return;
+
+    if (event.key === "Escape") {
+        closeMediaViewer();
+    } else if (event.key === "ArrowLeft") {
+        showAdjacentMedia(-1);
+    } else if (event.key === "ArrowRight") {
+        showAdjacentMedia(1);
+    }
+});
 
 shareBtn?.addEventListener("click", openShareModal);
 closeShare?.addEventListener("click", closeShareModal);
