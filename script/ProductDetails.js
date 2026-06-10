@@ -28,6 +28,33 @@ const modalNextBtn = document.getElementById("modalNextBtn");
 const likeBtn = document.getElementById("likeBtn");
 const likeIcon = document.getElementById("likeIcon");
 
+let productOptionalColumns = {
+    checked: false,
+    demoUrl: true
+};
+
+function isMissingColumnError(error, columnName) {
+    if (!error) return false;
+    const message = `${error.message || ""} ${error.details || ""} ${error.hint || ""}`;
+    return message.includes(columnName) || error.code === "42703" || error.code === "PGRST204";
+}
+
+async function getProductOptionalColumns() {
+    if (productOptionalColumns.checked) return productOptionalColumns;
+
+    const { error } = await supabase
+        .from("products")
+        .select("id, demo_url")
+        .limit(1);
+
+    productOptionalColumns = {
+        checked: true,
+        demoUrl: !isMissingColumnError(error, "demo_url")
+    };
+
+    return productOptionalColumns;
+}
+
 const shareBtn = document.getElementById("shareBtn");
 const shareModal = document.getElementById("shareModal");
 const closeShare = document.getElementById("closeShare");
@@ -375,15 +402,14 @@ async function loadProjectDetails() {
         return;
     }
 
-    const { data, error } = await supabase
-        .from("products")
-        .select(`
+    const optionalColumns = await getProductOptionalColumns();
+    const selectColumns = `
             id,
             title,
             description,
             main_image,
             video_url,
-            demo_url,
+            ${optionalColumns.demoUrl ? "demo_url," : ""}
             likes,
             created_at,
             category,
@@ -393,7 +419,11 @@ async function loadProjectDetails() {
                 media_url,
                 media_type
             )
-        `)
+        `;
+
+    const { data, error } = await supabase
+        .from("products")
+        .select(selectColumns)
         .eq("id", projectId)
         .single();
 

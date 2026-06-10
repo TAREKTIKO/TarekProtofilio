@@ -31,6 +31,68 @@ console.log("Dashboardscript loaded, supabase:", supabase ? "✓ Available" : "�
 let projectPendingDelete = null;
 let userPendingDelete = null;
 
+const PROJECT_VISIBILITY_STORAGE_KEY = "dashboardProjectVisibility";
+let productOptionalColumns = {
+    checked: false,
+    isVisible: true,
+    demoUrl: true
+};
+
+function getStoredProjectVisibility() {
+    try {
+        return JSON.parse(localStorage.getItem(PROJECT_VISIBILITY_STORAGE_KEY) || "{}");
+    } catch (error) {
+        console.warn("Could not read project visibility cache:", error);
+        return {};
+    }
+}
+
+function setStoredProjectVisibility(projectId, isVisible) {
+    const visibility = getStoredProjectVisibility();
+    visibility[projectId] = isVisible;
+    localStorage.setItem(PROJECT_VISIBILITY_STORAGE_KEY, JSON.stringify(visibility));
+}
+
+function removeStoredProjectVisibility(projectId) {
+    const visibility = getStoredProjectVisibility();
+    delete visibility[projectId];
+    localStorage.setItem(PROJECT_VISIBILITY_STORAGE_KEY, JSON.stringify(visibility));
+}
+
+function getProjectVisibility(project) {
+    const storedVisibility = getStoredProjectVisibility();
+    if (Object.prototype.hasOwnProperty.call(storedVisibility, project.id)) {
+        return storedVisibility[project.id] !== false;
+    }
+
+    return project.is_visible !== false;
+}
+
+function isMissingColumnError(error, columnName) {
+    if (!error) return false;
+    const message = `${error.message || ""} ${error.details || ""} ${error.hint || ""}`;
+    return message.includes(columnName) || error.code === "42703" || error.code === "PGRST204";
+}
+
+async function getProductOptionalColumns() {
+    if (productOptionalColumns.checked) {
+        return productOptionalColumns;
+    }
+
+    const { error } = await supabase
+        .from("products")
+        .select("id, is_visible, demo_url")
+        .limit(1);
+
+    productOptionalColumns = {
+        checked: true,
+        isVisible: !isMissingColumnError(error, "is_visible"),
+        demoUrl: !isMissingColumnError(error, "demo_url")
+    };
+
+    return productOptionalColumns;
+}
+
 // ────────────────────────────────────────────────
 //  Dashboard Stats & Data Loading
 // ────────────────────────────────────────────────
@@ -225,9 +287,19 @@ async function loadServicesTable() {
 
 async function loadProjectsManagement() {
     try {
+        const optionalColumns = await getProductOptionalColumns();
+        const selectColumns = [
+            "id",
+            "title",
+            "description",
+            "main_image",
+            "created_at",
+            optionalColumns.isVisible ? "is_visible" : null
+        ].filter(Boolean).join(", ");
+
         const { data: projects, error } = await supabase
             .from("products")
-            .select("id, title, description, main_image, created_at, is_visible")
+            .select(selectColumns)
             .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -236,7 +308,7 @@ async function loadProjectsManagement() {
         if (!projectsList) return;
 
         projectsList.innerHTML = (projects || []).map((project) => {
-            const isVisible = project.is_visible !== false;
+            const isVisible = getProjectVisibility(project);
             return `
             <div class="group flex flex-col sm:flex-row sm:items-center justify-between 
                         bg-gray-900 p-5 rounded-2xl border border-gray-800 
@@ -338,12 +410,17 @@ function attachProjectEventListeners() {
             const newVisibility = !isCurrentlyVisible;
 
             try {
-                const { error } = await supabase
-                    .from("products")
-                    .update({ is_visible: newVisibility })
-                    .eq("id", projectId);
+                const optionalColumns = await getProductOptionalColumns();
+                if (optionalColumns.isVisible) {
+                    const { error } = await supabase
+                        .from("products")
+                        .update({ is_visible: newVisibility })
+                        .eq("id", projectId);
 
-                if (error) throw error;
+                    if (error) throw error;
+                }
+
+                setStoredProjectVisibility(projectId, newVisibility);
 
                 alert(`Project has been ${newVisibility ? "published" : "hidden"} successfully!`);
                 await loadProjectsManagement();
@@ -369,10 +446,15 @@ function setupGlobalModalListeners() {
 
             const projectId = projectPendingDelete.getAttribute("data-project-id");
             try {
-                // Delete dependent media, comments, and likes first
-                await supabase.from("project_media").delete().eq("product_id", projectId);
-                await supabase.from("comments").delete().eq("product_id", projectId);
-                await supabase.from("likes").delete().eq("product_id", projectId);
+                // Delete dependent rows first to satisfy foreign key constraints.
+                const childDeletes = [
+                    await supabase.from("project_media").delete().eq("product_id", projectId),
+                    await supabase.from("likes").delete().eq("product_id", projectId),
+                    await supabase.from("comments").delete().eq("product_id", projectId)
+                ];
+
+                const childDeleteError = childDeletes.find(result => result.error)?.error;
+                if (childDeleteError) throw childDeleteError;
 
                 const { error } = await supabase
                     .from("products")
@@ -381,6 +463,7 @@ function setupGlobalModalListeners() {
 
                 if (error) throw error;
 
+                removeStoredProjectVisibility(projectId);
                 projectPendingDelete.remove();
                 projectPendingDelete = null;
                 deleteModal?.classList.add("hidden");
@@ -542,20 +625,25 @@ function setupAddProjectModal() {
 
         try {
             let projectId = editId;
+            const optionalColumns = await getProductOptionalColumns();
+            const projectPayload = {
+                title,
+                description,
+                category,
+                level,
+                duration,
+                main_image: mainImage,
+                video_url: videoUrl
+            };
+
+            if (optionalColumns.demoUrl) {
+                projectPayload.demo_url = demoUrl;
+            }
 
             if (editId) {
                 const { data, error } = await supabase
                     .from("products")
-                    .update({
-                        title,
-                        description,
-                        category,
-                        level,
-                        duration,
-                        main_image: mainImage,
-                        video_url: videoUrl,
-                        demo_url: demoUrl
-                    })
+                    .update(projectPayload)
                     .eq("id", editId)
                     .select();
 
@@ -563,25 +651,20 @@ function setupAddProjectModal() {
 
                 alert("Project updated successfully!");
             } else {
+                projectPayload.likes = 0;
+                if (optionalColumns.isVisible) {
+                    projectPayload.is_visible = true;
+                }
+
                 const { data, error } = await supabase
                     .from("products")
-                    .insert([{
-                        title,
-                        description,
-                        category,
-                        level,
-                        duration,
-                        main_image: mainImage,
-                        video_url: videoUrl,
-                        demo_url: demoUrl,
-                        likes: 0,
-                        is_visible: true
-                    }])
+                    .insert([projectPayload])
                     .select();
 
                 if (error) throw error;
                 if (data && data.length > 0) {
                     projectId = data[0].id;
+                    setStoredProjectVisibility(projectId, true);
                 }
 
                 alert("Project created successfully!");
@@ -1091,7 +1174,8 @@ function setupUserModal() {
 function initializeDashboard() {
     console.log("Dashboard loading...");
 
-    const buttons = document.querySelectorAll("aside button:not(#logoutbtn)");
+    // Exclude settings button and logout button from navigation buttons
+    const buttons = document.querySelectorAll("aside .flex.flex-col.gap-2.my-8 button:not(#settings-dropdown-btn)");
     const title = document.getElementById("button-name");
     const logoutBtn = document.getElementById("logoutbtn");
 
@@ -1100,24 +1184,26 @@ function initializeDashboard() {
         "Projects": "projects-content",
         "Services": "services-content",
         "Interactions": "interactions-content",
-        "Users": "users-content",
-        "Settings": "settings-content"
+        "Users": "users-content"
     };
 
     console.log(`Found ${buttons.length} navigation buttons`);
 
     if (buttons.length > 0) {
         const defaultBtn = buttons[0];
-        defaultBtn.classList.add("bg-yellow-600", "text-black");
-        title.textContent = defaultBtn.textContent.trim();
+        defaultBtn.classList.add("bg-yellow-600", "font-medium");
+        defaultBtn.style.color = 'black';
+        title.textContent = 'Dashboard';
 
+        // Hide all content sections
         Object.values(pageMap).forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.add("hidden");
         });
 
-        const defaultContent = document.getElementById(pageMap[defaultBtn.textContent.trim()]);
-        if (defaultContent) defaultContent.classList.remove("hidden");
+        // Show main content by default
+        const mainContent = document.getElementById("main-content");
+        if (mainContent) mainContent.classList.remove("hidden");
 
         console.log("Loading dashboard data...");
         loadDashboardStats();
@@ -1135,8 +1221,12 @@ function initializeDashboard() {
             const btnName = btn.textContent.trim();
             title.textContent = btnName;
 
-            buttons.forEach(b => b.classList.remove("bg-yellow-600", "text-black"));
-            btn.classList.add("bg-yellow-600", "text-black");
+            buttons.forEach(b => {
+                b.classList.remove("bg-yellow-600", "font-medium");
+                b.style.color = 'white';
+            });
+            btn.classList.add("bg-yellow-600", "font-medium");
+            btn.style.color = 'black';
 
             Object.values(pageMap).forEach(id => {
                 const el = document.getElementById(id);

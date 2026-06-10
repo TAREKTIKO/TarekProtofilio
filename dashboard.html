@@ -27,16 +27,47 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <style>
+        /* Settings dropdown positioning */
+        #settings-menu {
+            z-index: 99999 !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Ensure dropdown is visible when not hidden */
+        #settings-menu:not(.hidden) {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        /* Hide dropdown when hidden class is applied */
+        #settings-menu.hidden {
+            display: none !important;
+            visibility: hidden !important;
+        }
+    </style>
     <!-- Javascript -->
     <!-- Supabase module -->
     <script type="module" src="./script/supabase.js"></script>
     <!-- Dashboard script module -->
     <script type="module" src="./script/dashboardscript.js"></script>
+    <!-- Settings Dashboard -->
+    <script src="./script/settings-dashboard.js"></script>
 </head>
 <body class="bg-black transition-opacity duration-500">
-<div class="flex h-screen">
-    <aside class="w-56 shrink-0 bg-black border-r border-yellow-700 p-6 flex flex-col">
-        <h3 class="text-white text-center text-2xl font-bold tracking-wide">
+<div class="flex h-screen flex-col lg:flex-row">
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-toggle" class="lg:hidden fixed top-4 left-4 z-50 bg-yellow-600 text-black p-2 rounded-lg">
+        <i class="fa-solid fa-bars text-xl"></i>
+    </button>
+
+    <aside id="sidebar" class="w-full lg:w-56 shrink-0 bg-black border-b lg:border-b-0 lg:border-r border-yellow-700 p-6 flex flex-col fixed lg:relative left-0 top-0 h-screen lg:h-auto overflow-y-auto transition-all duration-300 hidden lg:flex z-50 lg:z-0">
+        <button id="close-sidebar" class="lg:hidden absolute top-4 right-4 text-white text-xl">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h3 class="text-white text-center text-2xl font-bold tracking-wide mt-8 lg:mt-0">
             Dashboard
         </h3>
         <div class="flex flex-col items-center gap-3 mt-6" id="user-info">
@@ -45,34 +76,60 @@
             <span id="user-status" class="text-yellow-300 text-sm">Admin</span>
         </div>
         <div class="flex flex-col gap-2 my-8">
-            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" id="main-btn">Main</button>
-            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Projects</button>
-            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Services</button>
-            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Interactions</button>
-            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Users</button>
-            <button class="text-white hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg">Settings</button>
+            <button class="hover:bg-yellow-600 transition py-2 rounded-lg bg-yellow-600 font-medium" id="main-btn" style="color: black;">Main</button>
+            <button class="hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" style="color: white;">Projects</button>
+            <button class="hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" style="color: white;">Services</button>
+            <button class="hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" style="color: white;">Interactions</button>
+            <button class="hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" style="color: white;">Users</button>
+            <!-- Settings Button (dropdown moved outside sidebar) -->
+            <button class="w-full hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg text-center" id="settings-dropdown-btn" style="color: white;">
+                Settings
+            </button>
         </div>
         <!-- Logout -->
         <div class="mt-auto">
             <div class="h-px bg-gray-600 my-3"></div>
-            <button id="logoutbtn" class="w-full text-red-400 hover:bg-red-600 hover:text-white transition py-2 rounded-lg">
+            <button id="logoutbtn" class="w-full hover:bg-red-600 hover:text-white transition py-2 rounded-lg" style="color: #f87171;">
                 Logout
             </button>
         </div>
     </aside>
+    
+    <!-- Settings Dropdown Menu (Outside sidebar to prevent overflow clipping) -->
+    <div id="settings-menu" class="hidden fixed bg-gray-800 border border-yellow-600 rounded-lg shadow-lg" style="width: 220px; z-index: 99999; top: 0; left: 0;">
+        <button class="w-full text-left hover:bg-yellow-600 hover:text-black transition py-2 px-3 text-sm flex items-center gap-2" id="profile-settings-btn" style="color: white;">
+            <i class="fa-solid fa-user text-sm"></i>
+            Profile Settings
+        </button>
+        <button class="w-full text-left hover:bg-yellow-600 hover:text-black transition py-2 px-3 text-sm flex items-center gap-2" id="appearance-settings-btn" style="color: white;">
+            <i class="fa-solid fa-palette text-sm"></i>
+            Appearance Settings
+        </button>
+    </div>
+    
     <!-- ============================================================================================================================= -->
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col w-full lg:w-auto">
         <!-- Top Navbar -->
-        <nav class="h-24 border-b border-yellow-700 flex items-center justify-between px-6">
+        <nav class="sticky lg:static top-0 z-40 h-auto border-b border-yellow-700 flex flex-col sm:flex-row items-center justify-between px-6 py-4 gap-4 bg-black">
             <h3 class="text-white text-2xl font-bold" id="button-name"></h3>
-            <a href="./index.html" class="text-white bg-yellow-600 hover:bg-black border border-yellow-600 transition py-2 px-4 rounded-lg">Home Page</a>
+            
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-sm mx-auto sm:mx-0 w-full sm:w-auto">
+                <div class="relative">
+                    <input type="text" id="dashboard-search" placeholder="Search Projects, Services, Users..." 
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    <i class="fa-solid fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+
+            <a href="./index.html" class="text-white bg-yellow-600 hover:bg-black border border-yellow-600 transition py-2 px-4 rounded-lg whitespace-nowrap">Home Page</a>
         </nav>
         <!-- Content -->
-        <main class="flex-1 p-6 bg-gray-200 overflow-hidden relative">
+        <main class="flex-1 p-6 bg-gray-200 overflow-y-auto">
             <!-- ============================================================================================================================= -->
             <!-- main-page -->
-            <div id="main-content" class="absolute inset-0 p-6 transition-all duration-300 text-white">
+            <div id="main-content" class="transition-all duration-300 text-white p-6">
 
                 <!-- Stats Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -208,7 +265,7 @@
             </div>
             <!-- ============================================================================================================================= -->
             <!-- Projects Page -->
-            <div id="projects-content" class="absolute inset-0 p-6 hidden transition-all duration-300 overflow-auto text-white">
+            <div id="projects-content" class="hidden transition-all duration-300 text-white p-6">
 
                 <!-- Header -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -320,88 +377,65 @@
             </div>     
             <!-- ============================================================================================================================= -->
             <!-- services-page -->
-            <div id="services-content" class="absolute inset-0 p-6 hidden transition-all duration-300 text-white">
+            <div id="services-content" class="hidden transition-all duration-300 text-white p-6">
 
                 <!-- Header -->
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <div>
                         <h2 class="text-2xl font-bold text-yellow-600">Services Management</h2>
-                        <p class="text-gray-400 text-sm">Manage what you offer to your clients</p>
+                        <p class="text-gray-400 text-sm">Control, edit and manage your services</p>
                     </div>
 
-                    <button class="bg-yellow-600 hover:bg-yellow-500 text-black font-medium 
+                    <button id="add-service-btn" class="bg-yellow-600 hover:bg-yellow-500 text-black font-medium 
                                 py-2 px-5 rounded-lg transition shadow-md">
                         + Add Service
                     </button>
                 </div>
 
-                <!-- 🔥 Services Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 🔥 Wrapper Card -->
+                <div class="bg-gray-950 border border-gray-800 rounded-2xl p-6 shadow-lg">
 
-                    <!-- Service Card -->
-                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 
-                                hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-900/20 
-                                transition duration-300 group">
+                    <!-- Services List -->
+                    <div id="services-list" class="flex flex-col gap-5">
 
-                        <!-- Icon -->
-                        <div class="w-14 h-14 flex items-center justify-center rounded-xl 
-                                    bg-yellow-600/20 text-yellow-400 mb-4 group-hover:scale-110 transition">
-                            <i class="fas fa-code text-xl"></i>
-                        </div>
+                        <!-- Service Card Template -->
+                        <div class="group flex flex-col sm:flex-row sm:items-center justify-between 
+                                    bg-gray-900 p-5 rounded-2xl border border-gray-800 
+                                    hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-900/20 
+                                    transition-all duration-300" data-service-id="1">
 
-                        <!-- Content -->
-                        <h3 class="text-lg font-semibold mb-2">Web Development</h3>
-                        <p class="text-gray-400 text-sm mb-4">
-                            Build modern and responsive websites using latest technologies.
-                        </p>
+                            <div class="flex items-center gap-4 flex-1">
+                                <img src="service-thumb.jpg" alt="" 
+                                    class="w-16 h-16 rounded-lg object-cover border border-gray-700 
+                                        group-hover:scale-105 transition shrink-0">
 
-                        <!-- Actions -->
-                        <div class="flex justify-between items-center mt-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <h3 class="font-semibold text-lg">Service Title</h3>
+                                        <span class="px-3 py-1 text-xs rounded-full 
+                                                    bg-green-600/20 text-green-400">
+                                            Active
+                                        </span>
+                                    </div>
 
-                            <span class="text-xs text-green-400 bg-green-600/20 px-3 py-1 rounded-full">
-                                Active
-                            </span>
-
-                            <div class="flex gap-2">
-                                <button class="p-2 rounded-lg bg-gray-800 hover:bg-blue-600 transition">
-                                    <i class="fas fa-edit text-blue-400 hover:text-white"></i>
-                                </button>
-                                <button class="p-2 rounded-lg bg-gray-800 hover:bg-red-600 transition">
-                                    <i class="fas fa-trash text-red-400 hover:text-white"></i>
-                                </button>
+                                    <p class="text-gray-400 text-sm">
+                                        Service description goes here...
+                                    </p>
+                                    <p class="text-yellow-400 text-sm mt-2">Price: $99.99 | Rating: 4.5/5</p>
+                                </div>
                             </div>
 
-                        </div>
-
-                    </div>
-
-                    <!-- Service Card 2 -->
-                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 
-                                hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-900/20 
-                                transition duration-300 group">
-
-                        <div class="w-14 h-14 flex items-center justify-center rounded-xl 
-                                    bg-yellow-600/20 text-yellow-400 mb-4 group-hover:scale-110 transition">
-                            <i class="fas fa-desktop text-xl"></i>
-                        </div>
-
-                        <h3 class="text-lg font-semibold mb-2">Desktop Applications</h3>
-                        <p class="text-gray-400 text-sm mb-4">
-                            Create powerful desktop apps using C# and modern frameworks.
-                        </p>
-
-                        <div class="flex justify-between items-center mt-4">
-
-                            <span class="text-xs text-yellow-400 bg-yellow-600/20 px-3 py-1 rounded-full">
-                                Draft
-                            </span>
-
-                            <div class="flex gap-2">
-                                <button class="p-2 rounded-lg bg-gray-800 hover:bg-blue-600 transition">
-                                    <i class="fas fa-edit text-blue-400 hover:text-white"></i>
+                            <div class="flex items-center gap-2 sm:gap-3 mt-4 sm:mt-0">
+                                <button class="edit-btn p-2 rounded-lg bg-gray-800 hover:bg-blue-600 transition group">
+                                    <i class="fas fa-edit text-blue-400 group-hover:text-white"></i>
                                 </button>
-                                <button class="p-2 rounded-lg bg-gray-800 hover:bg-red-600 transition">
-                                    <i class="fas fa-trash text-red-400 hover:text-white"></i>
+
+                                <button class="delete-btn p-2 rounded-lg bg-gray-800 hover:bg-red-600 transition group">
+                                    <i class="fas fa-trash text-red-400 group-hover:text-white"></i>
+                                </button>
+
+                                <button class="hide-btn p-2 rounded-lg bg-gray-800 hover:bg-yellow-600 transition group">
+                                    <i class="fas fa-eye-slash text-gray-400 group-hover:text-white"></i>
                                 </button>
                             </div>
 
@@ -415,7 +449,7 @@
 
             <!-- ============================================================================================================================= -->
             <!-- interactions-page -->
-            <div id="interactions-content" class="absolute inset-0 p-6 hidden transition-all duration-300 text-white">
+            <div id="interactions-content" class="hidden transition-all duration-300 text-white p-6">
                 <h2 class="text-2xl font-bold mb-2 text-yellow-600">Available Comments & Messages</h2>
                 <p class="text-gray-400 mb-6">Manage user interactions and requests</p>
                 <!-- Card -->
@@ -445,7 +479,7 @@
             
             <!-- ============================================================================================================================= -->
             <!-- users-page -->
-            <div id="users-content" class="absolute inset-0 p-6 hidden transition-all duration-300 text-white">
+            <div id="users-content" class="hidden transition-all duration-300 text-white p-6">
                             <!-- Header -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <div>
@@ -484,7 +518,7 @@
         
         <!-- ============================================================================================================================= -->
         <!-- settings-page -->
-        <div id="settings-content" class="absolute inset-0 p-6 hidden transition-all duration-300">
+        <div id="settings-content" class="hidden transition-all duration-300 p-6">
                 <h2 class="text-2xl font-bold mb-2 text-yellow-600">Settings Page</h2>
                 <p class="text-gray-400 mb-6">Edit the full page setting</p>
                 <!-- Outer Card  -->
@@ -692,6 +726,95 @@
                 </div>
             </div>
 
+            <!-- Add Service Modal -->
+            <div id="add-service-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                <div class="bg-gray-900 text-white rounded-xl p-8 w-full max-w-2xl mx-4 shadow-2xl border border-gray-700 overflow-auto max-h-[90vh]">
+                    <h3 class="text-2xl font-bold mb-6">Add New Service</h3>
+                    <form id="add-service-form" class="flex flex-col gap-5">
+                        
+                        <!-- Title -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Service Title *</label>
+                            <input type="text" id="add-service-title" placeholder="Enter service title" required
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Description *</label>
+                            <textarea id="add-service-description" placeholder="Enter service description" rows="4" required
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-none"></textarea>
+                        </div>
+
+                        <!-- Category & Duration -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Category *</label>
+                                <input type="text" id="add-service-category" placeholder="e.g., Web Dev" required
+                                    class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Duration *</label>
+                                <input type="text" id="add-service-duration" placeholder="e.g., 2 weeks" required
+                                    class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                        </div>
+
+                        <!-- Price & Delivery -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Price *</label>
+                                <input type="number" id="add-service-price" placeholder="0.00" min="0" step="0.01" required
+                                    class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Delivery Time *</label>
+                                <input type="text" id="add-service-delivery" placeholder="e.g., 5-10 days" required
+                                    class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                        </div>
+
+                        <!-- Main Image -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Main Image (URL or Upload) *</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="add-service-main-image" placeholder="Paste image URL or upload below" required
+                                    class="flex-1 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                <input type="file" id="add-service-image-upload" accept="image/*"
+                                    class="hidden">
+                                <button type="button" id="service-upload-btn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                                    Upload
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Video URL -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Video URL (Optional)</label>
+                            <input type="url" id="add-service-video-url" placeholder="https://example.com/video"
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+
+                        <!-- Gallery Images -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Gallery Images (Comma-separated URLs)</label>
+                            <textarea id="add-service-gallery" placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg" rows="3"
+                                class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-none"></textarea>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button type="button" id="service-cancel" class="px-6 py-2.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-6 py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-black font-medium transition">
+                                Create Service
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- Add/Edit User Modal -->
             <div id="user-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm">
                 <div class="bg-gray-900 text-white rounded-xl p-8 w-full max-w-lg mx-4 shadow-2xl border border-gray-700 overflow-auto max-h-[90vh]">
@@ -759,6 +882,170 @@
                     </form>
                 </div>
             </div>
+
+        <!-- ═══ PROFILE SETTINGS MODAL ═══ -->
+        <div id="profile-settings-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            <div class="bg-gray-900 text-white rounded-xl p-8 w-full max-w-3xl mx-4 shadow-2xl border border-gray-700 overflow-auto max-h-[90vh]">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Profile Settings</h3>
+                    <button id="close-profile-modal" class="text-gray-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <form id="profile-settings-form" class="flex flex-col gap-6">
+                    
+                    <!-- Profile Picture -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3">Profile Picture</label>
+                        <div class="flex items-center gap-4">
+                            <img id="profile-pic-preview" src="./img/User1.png" alt="Profile" class="w-24 h-24 rounded-full border-2 border-yellow-500 object-cover">
+                            <div>
+                                <input type="file" id="profile-pic-upload" accept="image/*" class="hidden">
+                                <button type="button" id="profile-pic-btn" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg transition">
+                                    Change Picture
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Name -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Profile Name *</label>
+                        <input type="text" id="profile-name-input" placeholder="Enter your name" required
+                            class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    </div>
+
+                    <!-- Profile Specialization -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Specialization *</label>
+                        <input type="text" id="profile-specialization-input" placeholder="e.g., Full-Stack Developer" required
+                            class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    </div>
+
+                    <!-- Bio -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Bio</label>
+                        <textarea id="profile-bio-input" placeholder="Tell us about yourself" rows="4"
+                            class="w-full border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-none"></textarea>
+                    </div>
+
+                    <!-- Skills -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Skills</label>
+                        <div class="flex gap-2 mb-3">
+                            <input type="text" id="new-skill-input" placeholder="Skill name (e.g., HTML, CSS, JavaScript)" 
+                                class="flex-1 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            <input type="text" id="new-skill-icon" placeholder="Font Awesome icon (e.g., fa-brands fa-html5)" 
+                                class="w-48 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            <button type="button" id="add-skill-btn" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg transition">
+                                Add
+                            </button>
+                        </div>
+                        <div id="skills-list" class="flex flex-wrap gap-3 mb-3">
+                            <!-- Skills will be listed here -->
+                        </div>
+                    </div>
+
+                    <!-- Contact Links -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Contact Links</label>
+                        <div class="flex gap-2 mb-3">
+                            <input type="text" id="new-link-label" placeholder="Link label (e.g., LinkedIn, GitHub)" 
+                                class="flex-1 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            <input type="url" id="new-link-url" placeholder="https://example.com" 
+                                class="flex-1 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            <button type="button" id="add-link-btn" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg transition">
+                                Add
+                            </button>
+                        </div>
+                        <div id="links-list" class="space-y-2 mb-3">
+                            <!-- Contact links will be listed here -->
+                        </div>
+                    </div>
+
+                    <!-- CV File -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">CV File</label>
+                        <div class="flex items-center gap-3">
+                            <div id="current-cv" class="flex-1 text-sm text-gray-400">No CV uploaded</div>
+                            <input type="file" id="cv-upload" accept=".pdf,.doc,.docx" class="hidden">
+                            <button type="button" id="upload-cv-btn" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg transition">
+                                Upload CV
+                            </button>
+                            <button type="button" id="delete-cv-btn" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" id="cancel-profile-btn" class="px-6 py-2.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-black font-medium transition">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ═══ APPEARANCE SETTINGS MODAL ═══ -->
+        <div id="appearance-settings-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            <div class="bg-gray-900 text-white rounded-xl p-8 w-full max-w-2xl mx-4 shadow-2xl border border-gray-700">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Appearance Settings</h3>
+                    <button id="close-appearance-modal" class="text-gray-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <form id="appearance-settings-form" class="flex flex-col gap-6">
+                    
+                    <!-- Theme Toggle -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3">Theme</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="theme" value="light" class="w-4 h-4">
+                                <span>Light Mode</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="theme" value="dark" checked class="w-4 h-4">
+                                <span>Dark Mode</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Language Toggle -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3">Language</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="language" value="en" checked class="w-4 h-4">
+                                <span>English</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="language" value="ar" class="w-4 h-4">
+                                <span>العربية</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" id="cancel-appearance-btn" class="px-6 py-2.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-black font-medium transition">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
         </main>
     </div>
 </div>

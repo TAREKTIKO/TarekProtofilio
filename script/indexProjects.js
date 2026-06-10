@@ -1,6 +1,53 @@
 import { supabase } from "./supabase.js";
 
 const projectsGrid = document.getElementById("projectsGrid");
+const PROJECT_VISIBILITY_STORAGE_KEY = "dashboardProjectVisibility";
+let productOptionalColumns = {
+    checked: false,
+    isVisible: true,
+    demoUrl: true
+};
+
+function isMissingColumnError(error, columnName) {
+    if (!error) return false;
+    const message = `${error.message || ""} ${error.details || ""} ${error.hint || ""}`;
+    return message.includes(columnName) || error.code === "42703" || error.code === "PGRST204";
+}
+
+async function getProductOptionalColumns() {
+    if (productOptionalColumns.checked) return productOptionalColumns;
+
+    const { error } = await supabase
+        .from("products")
+        .select("id, is_visible, demo_url")
+        .limit(1);
+
+    productOptionalColumns = {
+        checked: true,
+        isVisible: !isMissingColumnError(error, "is_visible"),
+        demoUrl: !isMissingColumnError(error, "demo_url")
+    };
+
+    return productOptionalColumns;
+}
+
+function getStoredProjectVisibility() {
+    try {
+        return JSON.parse(localStorage.getItem(PROJECT_VISIBILITY_STORAGE_KEY) || "{}");
+    } catch (error) {
+        console.warn("Could not read project visibility cache:", error);
+        return {};
+    }
+}
+
+function isProjectVisible(project) {
+    const storedVisibility = getStoredProjectVisibility();
+    if (Object.prototype.hasOwnProperty.call(storedVisibility, project.id)) {
+        return storedVisibility[project.id] !== false;
+    }
+
+    return project.is_visible !== false;
+}
 
 async function getProjectStats(projectId) {
     try {
@@ -27,23 +74,31 @@ async function getProjectStats(projectId) {
 
 async function loadTopProjects() {
     try {
-        // Fetch projects ordered by created_at, filtered by is_visible = true
-        const { data: projects, error } = await supabase
-            .from("products")
-            .select(`
+        const optionalColumns = await getProductOptionalColumns();
+        const selectColumns = `
                 id,
                 title,
                 description,
                 main_image,
                 video_url,
-                demo_url,
+                ${optionalColumns.demoUrl ? "demo_url," : ""}
+                ${optionalColumns.isVisible ? "is_visible," : ""}
                 created_at,
                 project_media (
                     media_url
                 )
-            `)
-            .eq("is_visible", true)
-            .order("created_at", { ascending: false });
+            `;
+
+        // Fetch projects ordered by created_at, filtered by is_visible when the DB supports it.
+        let query = supabase
+            .from("products")
+            .select(selectColumns);
+
+        if (optionalColumns.isVisible) {
+            query = query.eq("is_visible", true);
+        }
+
+        const { data: projects, error } = await query.order("created_at", { ascending: false });
 
         if (error) {
             console.error("Error loading projects:", error);
@@ -66,7 +121,7 @@ async function loadTopProjects() {
 
         // Fetch stats for each project
         const projectsWithStats = await Promise.all(
-            (projects || []).map(async (project) => {
+            (projects || []).filter(isProjectVisible).map(async (project) => {
                 const stats = await getProjectStats(project.id);
                 return {
                     ...project,
