@@ -124,18 +124,18 @@
                     <!-- About -->
                     <div class="bg-gray-900 p-8 rounded-2xl flex flex-col justify-between flex-1">
                         <div>
-                            <h1 class="text-4xl font-bold mb-4">
-                                Hi, I'm <span class="text-amber-500">Tarek Ahmed</span>
+                            <h1 id="profile-hero-title" class="text-4xl font-bold mb-4">
+                                Hi, I'm <span id="profile-hero-name" class="text-amber-500">Tarek Ahmed</span>
                             </h1>
-                            <p class="text-gray-400 leading-relaxed">
-                                I'm a passionate Full-Stack Developer who loves building modern, responsive, 
+                            <p id="profile-hero-bio" class="text-gray-400 leading-relaxed">
+                                <!-- I'm a passionate Full-Stack Developer who loves building modern, responsive, 
                                 and user-friendly applications. I focus on clean design, performance, 
-                                and delivering real value through code.
+                                and delivering real value through code. -->
                             </p>
                         </div>
                         <!-- CV Button -->
                         <div class="mt-6">
-                            <a href="./files/RESUME.pdf" download
+                            <a id="profile-cv-link" href="./files/RESUME.pdf" download
                             class="inline-block bg-amber-500 text-black px-6 py-3 rounded-lg 
                                     hover:bg-amber-400 transition font-semibold shadow-md">
                                 Download CV
@@ -153,7 +153,7 @@
                                 <!-- Page 1 -->
                                 <div class="grid grid-cols-3 gap-6 text-center min-w-full snap-start">
                                     <!-- 9 items -->
-                                    <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-brands fa-html5 text-3xl text-orange-500"></i><span class="text-sm text-gray-400">HTML</span></div>
+                                    <!-- <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-brands fa-html5 text-3xl text-orange-500"></i><span class="text-sm text-gray-400">HTML</span></div>
                                     <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-brands fa-css3 text-3xl text-blue-500"></i><span class="text-sm text-gray-400">CSS</span></div>
                                     <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-brands fa-js text-3xl text-yellow-400"></i><span class="text-sm text-gray-400">JS</span></div>
                                     <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-brands fa-bootstrap text-3xl text-purple-500"></i><span class="text-sm text-gray-400">Bootstrap</span></div>
@@ -161,14 +161,14 @@
                                     <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-solid fa-database text-3xl text-green-400"></i><span class="text-sm text-gray-400">SQL</span></div>
                                     <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-solid fa-code text-3xl text-purple-400"></i><span class="text-sm text-gray-400">C#</span></div>
                                     <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-solid fa-laptop-code text-3xl text-blue-400"></i><span class="text-sm text-gray-400">C++</span></div>
-                                    <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-solid fa-n text-3xl text-white"></i><span class="text-sm text-gray-400">Next.js</span></div>
+                                    <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-solid fa-n text-3xl text-white"></i><span class="text-sm text-gray-400">Next.js</span></div> -->
                                 </div>
                                 
                                 <!-- Page 2 (لو عايز تزود) -->
                                 <div class="grid grid-cols-3 gap-6 text-center min-w-full snap-start">
-                                    <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-brands fa-node text-3xl text-green-500"></i><span class="text-sm text-gray-400">Node.js</span></div>
+                                    <!-- <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-brands fa-node text-3xl text-green-500"></i><span class="text-sm text-gray-400">Node.js</span></div>
                                     <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-brands fa-git-alt text-3xl text-orange-600"></i><span>Git</span></div>
-                                    <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-solid fa-server text-3xl text-gray-400"></i><span>API</span></div>
+                                    <div class="flex flex-col items-center gap-2 hover:scale-110 transition"><i class="fa-solid fa-server text-3xl text-gray-400"></i><span>API</span></div> -->
                                     <!-- كمل لحد 9 -->
                                 </div>
 
@@ -185,19 +185,19 @@
                 <!-- RIGHT SIDE -->
                 <div class="bg-gray-900 p-8 rounded-2xl flex flex-col items-center justify-center gap-6">
                     <!-- Image -->
-                    <img src="./img/User1.png" class="w-64 h-64 object-cover rounded-full border-4 border-amber-500 shadow-lg">
+                    <img id="profile-avatar-img" src="./img/User1.png" class="w-64 h-64 object-cover rounded-full border-4 border-amber-500 shadow-lg" alt="Profile Photo">
                     <!-- Name -->
                     <div class="text-center mt-6">
-                        <h3 class="text-xl font-bold">Tarek Ahmed</h3>
-                        <p class="text-gray-400 text-sm">Full-Stack Developer</p>
+                        <h3 id="profile-card-name" class="text-xl font-bold">Tarek Ahmed</h3>
+                        <p id="profile-card-spec" class="text-gray-400 text-sm">Full-Stack Developer</p>
                     </div>
                     <!-- Social Icons -->
-                    <div class="mt-6 flex gap-4">
-                        <i class="fa-brands fa-facebook-f border border-gray-600 p-3 rounded-lg hover:bg-amber-500 hover:text-black transition transform hover:scale-110 cursor-pointer"></i>
+                    <div id="profile-social-icons" class="mt-6 flex gap-4">
+                        <!-- <i class="fa-brands fa-facebook-f border border-gray-600 p-3 rounded-lg hover:bg-amber-500 hover:text-black transition transform hover:scale-110 cursor-pointer"></i>
                         <i class="fa-brands fa-linkedin-in border border-gray-600 p-3 rounded-lg hover:bg-amber-500 hover:text-black transition cursor-pointer"></i>
                         <i class="fa-brands fa-github border border-gray-600 p-3 rounded-lg hover:bg-amber-500 hover:text-black transition cursor-pointer"></i>
                         <i class="fa-brands fa-youtube border border-gray-600 p-3 rounded-lg hover:bg-amber-500 hover:text-black transition cursor-pointer"></i>
-                        <i class="fa-brands fa-tiktok border border-gray-600 p-3 rounded-lg hover:bg-amber-500 hover:text-black transition cursor-pointer"></i>
+                        <i class="fa-brands fa-tiktok border border-gray-600 p-3 rounded-lg hover:bg-amber-500 hover:text-black transition cursor-pointer"></i> -->
                     </div>
                 </div>
             </div>
@@ -242,21 +242,21 @@
         <div class="container mx-auto px-6 py-12 flex flex-col md:flex-row justify-between gap-12">
             <!-- About Me -->
             <div class="flex-1 flex flex-col gap-3">
-                <h3 class="text-4xl font-bold text-amber-500">Tarek Ahmed</h3>
-                <p class="text-gray-400 text-m">Full-Stack Developer</p>
+                <h3 id="footer-profile-name" class="text-4xl font-bold text-amber-500">Tarek Ahmed</h3>
+                <p id="footer-profile-spec" class="text-gray-400 text-m">Full-Stack Developer</p>
                 <!-- Social Icons -->
-                <div class="flex gap-6 mt-4 text-xl">
+                <div id="footer-social-icons" class="flex gap-6 mt-4 text-xl">
                     <a href="#" class="hover:text-amber-500 transition">
-                        <i class="fa-brands fa-facebook-f"></i>
+                        <!-- <i class="fa-brands fa-facebook-f"></i> -->
                     </a>
                     <a href="#" class="hover:text-amber-500 transition">
-                        <i class="fa-brands fa-linkedin-in"></i>
+                        <!-- <i class="fa-brands fa-linkedin-in"></i> -->
                     </a>
                     <a href="#" class="hover:text-amber-500 transition">
-                        <i class="fa-brands fa-github"></i>
+                        <!-- <i class="fa-brands fa-github"></i> -->
                     </a>
                     <a href="#" class="hover:text-amber-500 transition">
-                        <i class="fa-brands fa-whatsapp"></i>
+                        <!-- <i class="fa-brands fa-whatsapp"></i> -->
                     </a>
                 </div>
             </div>
@@ -312,5 +312,7 @@
     <script type="module" src="./script/supabase.js"></script>
     <script src="./script/script.js"></script>
     <script type="module" src="./script/indexProjects.js"></script>
+    <!-- Profile Loader: hydrates page from Supabase on load -->
+    <script type="module" src="./script/profileLoader.js"></script>
 </body>
 </html>

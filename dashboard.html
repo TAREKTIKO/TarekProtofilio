@@ -932,13 +932,40 @@
 
                     <!-- Skills -->
                     <div>
-                        <label class="block text-sm font-medium mb-2">Skills</label>
-                        <div class="flex gap-2 mb-3">
-                            <input type="text" id="new-skill-input" placeholder="Skill name (e.g., HTML, CSS, JavaScript)" 
+                        <label class="block text-sm font-medium mb-2">Skills <span class="text-xs text-gray-400">(click preset or type any Font Awesome class)</span></label>
+
+                        <!-- Skill Presets -->
+                        <div class="flex flex-wrap gap-2 mb-3 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                            <p class="w-full text-xs text-gray-400 mb-1">⚡ Quick presets — click to fill fields:</p>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="HTML" data-icon="fa-brands fa-html5"><i class="fa-brands fa-html5 text-orange-500"></i> HTML</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="CSS" data-icon="fa-brands fa-css3"><i class="fa-brands fa-css3 text-blue-500"></i> CSS</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="JavaScript" data-icon="fa-brands fa-js"><i class="fa-brands fa-js text-yellow-400"></i> JavaScript</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="React" data-icon="fa-brands fa-react"><i class="fa-brands fa-react text-cyan-400"></i> React</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="Node.js" data-icon="fa-brands fa-node"><i class="fa-brands fa-node text-green-500"></i> Node.js</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="Bootstrap" data-icon="fa-brands fa-bootstrap"><i class="fa-brands fa-bootstrap text-purple-500"></i> Bootstrap</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="Python" data-icon="fa-brands fa-python"><i class="fa-brands fa-python text-blue-400"></i> Python</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="Git" data-icon="fa-brands fa-git-alt"><i class="fa-brands fa-git-alt text-orange-600"></i> Git</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="SQL" data-icon="fa-solid fa-database"><i class="fa-solid fa-database text-green-400"></i> SQL</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="C#" data-icon="fa-solid fa-code"><i class="fa-solid fa-code text-purple-400"></i> C#</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="C++" data-icon="fa-solid fa-laptop-code"><i class="fa-solid fa-laptop-code text-blue-400"></i> C++</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="Next.js" data-icon="fa-solid fa-n"><i class="fa-solid fa-n"></i> Next.js</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="Vue" data-icon="fa-brands fa-vuejs"><i class="fa-brands fa-vuejs text-green-400"></i> Vue</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="PHP" data-icon="fa-brands fa-php"><i class="fa-brands fa-php text-indigo-400"></i> PHP</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="Docker" data-icon="fa-brands fa-docker"><i class="fa-brands fa-docker text-blue-500"></i> Docker</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="AWS" data-icon="fa-brands fa-aws"><i class="fa-brands fa-aws text-yellow-500"></i> AWS</button>
+                            <button type="button" class="skill-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-name="Tailwind" data-icon="fa-brands fa-tailwind"><i class="fa-brands fa-tailwind text-blue-500"></i> Tailwind</button>
+                        </div>
+
+                        <!-- Skill Input Row -->
+                        <div class="flex gap-2 mb-3 items-center">
+                            <div class="w-10 h-10 flex items-center justify-center bg-gray-800 border border-gray-700 rounded-lg shrink-0">
+                                <i id="skill-icon-preview" class="fa-solid fa-star text-yellow-400 text-lg"></i>
+                            </div>
+                            <input type="text" id="new-skill-icon" placeholder="Icon class (e.g. fa-brands fa-html5)" 
+                                class="w-52 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            <input type="text" id="new-skill-input" placeholder="Skill name" 
                                 class="flex-1 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                            <input type="text" id="new-skill-icon" placeholder="Font Awesome icon (e.g., fa-brands fa-html5)" 
-                                class="w-48 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                            <button type="button" id="add-skill-btn" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg transition">
+                            <button type="button" id="add-skill-btn" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg transition shrink-0">
                                 Add
                             </button>
                         </div>
@@ -949,13 +976,38 @@
 
                     <!-- Contact Links -->
                     <div>
-                        <label class="block text-sm font-medium mb-2">Contact Links</label>
-                        <div class="flex gap-2 mb-3">
-                            <input type="text" id="new-link-label" placeholder="Link label (e.g., LinkedIn, GitHub)" 
+                        <label class="block text-sm font-medium mb-2">Contact Links <span class="text-xs text-gray-400">(icon + label + URL — controls index.html)</span></label>
+
+                        <!-- Icon Presets -->
+                        <div class="flex flex-wrap gap-2 mb-3 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                            <p class="w-full text-xs text-gray-400 mb-1">🔗 Click a platform to auto-fill icon & label:</p>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="LinkedIn"   data-icon="fa-brands fa-linkedin-in">  <i class="fa-brands fa-linkedin-in text-blue-400"></i>   LinkedIn  </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="GitHub"     data-icon="fa-brands fa-github">      <i class="fa-brands fa-github"></i>              GitHub    </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="WhatsApp"   data-icon="fa-brands fa-whatsapp">    <i class="fa-brands fa-whatsapp text-green-400"></i>  WhatsApp  </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="YouTube"    data-icon="fa-brands fa-youtube">     <i class="fa-brands fa-youtube text-red-500"></i>     YouTube   </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="Twitter/X"  data-icon="fa-brands fa-x-twitter">   <i class="fa-brands fa-x-twitter"></i>               Twitter/X </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="Instagram"  data-icon="fa-brands fa-instagram">   <i class="fa-brands fa-instagram text-pink-400"></i>  Instagram </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="Facebook"   data-icon="fa-brands fa-facebook-f">  <i class="fa-brands fa-facebook-f text-blue-500"></i>  Facebook  </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="TikTok"     data-icon="fa-brands fa-tiktok">     <i class="fa-brands fa-tiktok"></i>                 TikTok    </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="Telegram"   data-icon="fa-brands fa-telegram">    <i class="fa-brands fa-telegram text-blue-400"></i>   Telegram  </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="Email"      data-icon="fa-solid fa-envelope">     <i class="fa-solid fa-envelope text-yellow-400"></i>  Email     </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="Website"    data-icon="fa-solid fa-globe">        <i class="fa-solid fa-globe text-gray-300"></i>      Website   </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="Behance"    data-icon="fa-brands fa-behance">     <i class="fa-brands fa-behance text-blue-400"></i>    Behance   </button>
+                            <button type="button" class="link-preset px-2 py-1 text-xs bg-gray-700 hover:bg-yellow-600 hover:text-black text-white rounded flex items-center gap-1" data-label="Dribbble"   data-icon="fa-brands fa-dribbble">    <i class="fa-brands fa-dribbble text-pink-500"></i>   Dribbble  </button>
+                        </div>
+
+                        <!-- Link Input Row -->
+                        <div class="flex gap-2 mb-3 items-center">
+                            <div class="w-10 h-10 flex items-center justify-center bg-gray-800 border border-gray-700 rounded-lg shrink-0">
+                                <i id="link-icon-preview" class="fa-solid fa-link text-yellow-400 text-lg"></i>
+                            </div>
+                            <input type="text" id="new-link-icon" placeholder="Icon class (e.g. fa-brands fa-linkedin-in)"
+                                class="w-56 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            <input type="text" id="new-link-label" placeholder="Label (e.g. LinkedIn)"
                                 class="flex-1 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                            <input type="url" id="new-link-url" placeholder="https://example.com" 
+                            <input type="url" id="new-link-url" placeholder="https://..."
                                 class="flex-1 border border-gray-700 p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                            <button type="button" id="add-link-btn" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg transition">
+                            <button type="button" id="add-link-btn" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black rounded-lg transition shrink-0">
                                 Add
                             </button>
                         </div>
