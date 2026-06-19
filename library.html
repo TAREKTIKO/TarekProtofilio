@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarek Ahmed | Library</title>
+    <meta name="description" content="A personal developer library of reusable code snippets, UI components, templates, and project resources by Tarek Ahmed.">
+    <link rel="stylesheet" href="style/all.css">
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Prism.js syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <!-- style -->
+    <link rel="stylesheet" href="style/style.css">
+    <style>
+        /* ========== LIBRARY PAGE STYLES ========== */
+        .lib-hero-bg {
+            background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245,158,11,0.12) 0%, transparent 65%),
+                        linear-gradient(to bottom, #000000, #111827);
+        }
+
+        /* Search bar glow */
+        .lib-search:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(245,158,11,0.4), 0 0 20px rgba(245,158,11,0.1);
+        }
+
+        /* Sidebar accordion */
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+        }
+        .category-content.open {
+            max-height: 500px;
+        }
+        .category-chevron {
+            transition: transform 0.3s ease;
+        }
+        .category-chevron.open {
+            transform: rotate(180deg);
+        }
+
+        /* Library card */
+        .lib-card {
+            background: rgba(17,24,39,0.9);
+            border: 1px solid rgba(75,85,99,0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .lib-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(245,158,11,0.06) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .lib-card:hover {
+            border-color: rgba(245,158,11,0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(245,158,11,0.08);
+        }
+        .lib-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Tech badge */
+        .tech-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        /* Sidebar active subcategory */
+        .sub-item.active,
+        .sub-item:hover {
+            color: #f59e0b;
+            background: rgba(245,158,11,0.08);
+        }
+
+        /* Filter button */
+        .filter-btn.active {
+            background: rgba(245,158,11,0.15);
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        /* Pagination */
+        .page-btn.active {
+            background: #f59e0b;
+            color: #000;
+            border-color: #f59e0b;
+        }
+
+        /* Sidebar highlight */
+        .cat-header.active {
+            color: #f59e0b;
+            background: rgba(245,158,11,0.06);
+        }
+
+        /* Favorite pulse animation */
+        @keyframes favPulse {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+        .fav-pulse {
+            animation: favPulse 0.35s ease;
+        }
+
+        /* Recently viewed badge */
+        .recently-badge {
+            background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05));
+            border: 1px solid rgba(245,158,11,0.3);
+        }
+
+        /* Glassmorphism sidebar on large screens */
+        @media (min-width: 1024px) {
+            .lib-sidebar {
+                background: rgba(17,24,39,0.8);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(75,85,99,0.4);
+            }
+        }
+
+        /* Shimmer skeleton */
+        @keyframes shimmer {
+            0%   { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+            background-size: 468px 100%;
+            animation: shimmer 1.4s infinite linear;
+            border-radius: 0.5rem;
+        }
+
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 30;
+        }
+        .sidebar-overlay.show {
+            display: block;
+        }
+        #libSidebar {
+            transition: transform 0.3s ease;
+        }
+        @media (max-width: 1023px) {
+            #libSidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 40;
+                transform: translateX(-100%);
+                overflow-y: auto;
+            }
+            #libSidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Empty state illustration */
+        .empty-icon {
+            background: rgba(245,158,11,0.07);
+            border: 1px dashed rgba(245,158,11,0.3);
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen">
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white border-b border-amber-600">
+        <div class="container mx-auto flex flex-wrap justify-between items-center gap-3 p-4">
+            <h3 class="order-1 text-2xl font-bold">Tarek Ahmed</h3>
+
+            <button id="mobile-menu-btn" type="button" class="order-3 lg:hidden w-11 h-11 flex items-center justify-center rounded-full bg-gray-800 border border-gray-700 text-amber-500 hover:bg-gray-700 hover:border-amber-600 transition" aria-controls="primary-menu" aria-expanded="false" aria-label="Toggle navigation menu">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+
+            <ul id="primary-menu" class="order-4 hidden w-full flex-col gap-2 rounded-xl border border-gray-800 bg-gray-900 p-4 shadow-2xl lg:order-2 lg:flex lg:w-auto lg:flex-row lg:items-center lg:gap-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
+                <li><a href="./index.html" class="hover:text-amber-500 transition">Home</a></li>
+                <li><a href="./projects.html" class="hover:text-amber-500 transition">Projects</a></li>
+                <li><a href="./index.html#Services" class="hover:text-amber-500 transition">Service</a></li>
+                <li><a href="./index.html#Contact-Us" class="hover:text-amber-500 transition">Contact Us</a></li>
+                <li><a href="./Certificates.html" class="hover:text-amber-500 transition">Certificates</a></li>
+            </ul>
+
+            <!-- User info -->
+            <div class="relative order-2 ml-auto lg:order-3 lg:ml-0" id="user-menu-wrapper">
+                <div id="user-info-btn" class="flex items-center gap-3 bg-gray-800 p-2 rounded-full hover:cursor-pointer hover:bg-gray-700 transition-colors border border-transparent hover:border-amber-600/50">
+                    <span id="signInBtn" class="text-sm font-semibold px-4 cursor-pointer">Sign In</span>
+                </div>
+                <div id="user-dropdown" class="absolute right-0 mt-3 w-64 bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl p-5 hidden transform origin-top-right transition-all duration-200 opacity-0 scale-95">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="relative mb-3">
+                            <div id="dropdownAvatar" class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center border-2 border-amber-600 shadow-lg shadow-amber-600/20">
+                                <i class="fa-solid fa-user text-amber-500 text-4xl"></i>
+                            </div>
+                            <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-gray-900 rounded-full"></span>
+                        </div>
+                        <h4 id="dropdownName" class="font-bold text-lg text-white">User</h4>
+                        <p id="dropdownRole" class="text-xs text-amber-500 font-medium mb-4">User • Online</p>
+                        <div class="w-full h-px bg-gray-800 mb-4"></div>
+                        <button id="manageBtn" type="button" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 shadow-lg shadow-amber-600/10 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-gear text-xs"></i>
+                            Manage Account
+                        </button>
+                        <button id="signOutBtn" type="button" class="w-full mt-2 text-gray-400 hover:text-red-400 py-2 text-xs transition-colors">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- User Modal -->
+    <div id="user-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-gray-900 w-full max-w-md p-6 rounded-2xl border border-gray-700 shadow-xl relative">
+            <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-red-400"><i class="fa-solid fa-xmark"></i></button>
+            <div class="flex flex-col items-center gap-3">
+                <div id="mainAvatar" class="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center border-2 border-amber-600"><i class="fa-solid fa-user text-amber-500 text-4xl"></i></div>
+                <h3 id="displayName" class="text-lg font-bold text-white">Tarek Ahmed</h3>
+            </div>
+            <div class="mt-6 flex flex-col gap-4">
+                <input id="editName" type="text" placeholder="Edit Name" class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-amber-500">
+                <div>
+                    <p class="text-sm text-gray-300 mb-2">Choose Avatar</p>
+                    <div class="flex gap-3 overflow-x-auto pb-2">
+                        <img src="./img/Avatar1.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar2.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar3.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar4.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar5.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar6.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                    </div>
+                </div>
+                <button id="saveBtn" class="bg-amber-500 text-black py-2 rounded-xl hover:bg-amber-400 transition">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="lib-hero-bg pt-28 pb-16 px-6 text-center relative overflow-hidden">
+        <!-- Decorative glow rings -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-amber-500/5 pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-amber-500/8 pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-3xl mx-auto">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center justify-center gap-2 text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+                <a href="./index.html" class="hover:text-amber-500 transition">Home</a>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+                <span class="text-amber-500 font-medium">Library</span>
+            </nav>
+
+            <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/25 rounded-full px-4 py-1.5 text-xs text-amber-400 font-semibold tracking-wider uppercase mb-5">
+                <i class="fa-solid fa-book"></i>
+                Developer Vault
+            </div>
+
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-5 leading-tight">
+                My <span class="text-amber-500">Library</span>
+            </h1>
+
+            <p class="text-gray-400 text-lg leading-relaxed max-w-2xl mx-auto mb-8">
+                A personal vault of reusable <span class="text-white font-medium">code snippets</span>, 
+                <span class="text-white font-medium">UI components</span>, 
+                <span class="text-white font-medium">templates</span>, and 
+                <span class="text-white font-medium">project resources</span> — 
+                organized, searchable, and ready to use.
+            </p>
+
+            <!-- Stats row -->
+            <div id="libraryStats" class="flex items-center justify-center gap-8 text-sm text-gray-400">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-amber-500"></i>
+                    <span><strong id="statCategories" class="text-white">—</strong> Categories</span>
+                </div>
+                <div class="w-px h-4 bg-gray-700"></div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-amber-500"></i>
+                    <span><strong id="statItems" class="text-white">—</strong> Resources</span>
+                </div>
+                <div class="w-px h-4 bg-gray-700"></div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bookmark text-amber-500"></i>
+                    <span><strong id="statFavs" class="text-white">0</strong> Saved</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="h-px w-full bg-gradient-to-r from-transparent via-amber-600/50 to-transparent"></div>
+
+    <!-- ===== SEARCH & QUICK FILTERS ===== -->
+    <section class="bg-gray-950 py-6 px-6 sticky top-[65px] z-20 border-b border-gray-800/60 backdrop-blur-md">
+        <div class="container mx-auto">
+            <!-- Search row -->
+            <div class="flex gap-3 mb-4">
+                <!-- Mobile sidebar toggle -->
+                <button id="sidebarToggleBtn" class="lg:hidden flex items-center justify-center w-11 h-11 bg-gray-800 border border-gray-700 rounded-xl text-amber-500 hover:bg-gray-700 transition flex-shrink-0" aria-label="Toggle categories">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
+                    <input id="libSearchInput" type="search" placeholder="Search snippets, components, templates…" autocomplete="off"
+                        class="lib-search w-full bg-gray-800 border border-gray-700 rounded-xl pl-11 pr-4 py-3 text-white placeholder-gray-500 text-sm transition">
+                </div>
+                <button id="clearSearchBtn" class="hidden flex-shrink-0 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-400 hover:text-white hover:border-amber-600 transition text-sm">
+                    <i class="fa-solid fa-xmark mr-1"></i> Clear
+                </button>
+            </div>
+
+            <!-- Quick filter tags -->
+            <div id="quickFilters" class="flex flex-wrap gap-2">
+                <span class="text-xs text-gray-500 self-center mr-1">Quick:</span>
+                <button data-filter="all"    class="filter-btn active text-xs px-3 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition">All</button>
+                <button data-filter="html"   class="filter-btn text-xs px-3 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition">HTML</button>
+                <button data-filter="css"    class="filter-btn text-xs px-3 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition">CSS</button>
+                <button data-filter="js"     class="filter-btn text-xs px-3 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition">JavaScript</button>
+                <button data-filter="react"  class="filter-btn text-xs px-3 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition">React</button>
+                <button data-filter="ui"     class="filter-btn text-xs px-3 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition">UI Components</button>
+                <button data-filter="animations" class="filter-btn text-xs px-3 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition">Animations</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MAIN LAYOUT ===== -->
+    <div class="min-h-screen bg-gradient-to-b from-gray-950 to-black">
+        <div class="container mx-auto px-4 lg:px-6 py-8">
+            <div class="flex gap-6 items-start">
+
+                <!-- ===== SIDEBAR OVERLAY (mobile) ===== -->
+                <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+                <!-- ===== SIDEBAR ===== -->
+                <aside id="libSidebar" class="lib-sidebar w-72 lg:w-64 xl:w-72 flex-shrink-0 rounded-2xl p-4 bg-gray-900 lg:sticky lg:top-[175px]">
+                    <!-- Sidebar header -->
+                    <div class="flex items-center justify-between mb-4 lg:hidden">
+                        <h2 class="font-bold text-amber-500 flex items-center gap-2"><i class="fa-solid fa-folder-tree"></i> Categories</h2>
+                        <button id="closeSidebarBtn" class="text-gray-400 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    </div>
+                    <h2 class="hidden lg:flex font-bold text-amber-500 items-center gap-2 mb-4 pb-3 border-b border-gray-800">
+                        <i class="fa-solid fa-folder-tree"></i> Categories
+                    </h2>
+
+                    <!-- "All" category -->
+                    <button id="allCategoryBtn" class="cat-header active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-left mb-1 transition">
+                        <i class="fa-solid fa-border-all text-amber-500 w-4"></i>
+                        All Resources
+                    </button>
+
+                    <!-- Dynamic category accordion list -->
+                    <div id="categoryAccordion" class="space-y-1">
+                        <!-- Injected by JS -->
+                        <div class="skeleton h-10 w-full mb-1"></div>
+                        <div class="skeleton h-10 w-full mb-1"></div>
+                        <div class="skeleton h-10 w-full mb-1"></div>
+                        <div class="skeleton h-10 w-full mb-1"></div>
+                    </div>
+
+                    <!-- Recently viewed -->
+                    <div id="recentlyViewedSection" class="mt-5 pt-4 border-t border-gray-800 hidden">
+                        <h3 class="text-xs text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Recently Viewed
+                        </h3>
+                        <ul id="recentlyViewedList" class="space-y-1.5">
+                            <!-- Injected by JS -->
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- ===== MAIN CONTENT ===== -->
+                <main class="flex-1 min-w-0">
+                    <!-- Toolbar row -->
+                    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                        <div>
+                            <h2 id="currentCategoryTitle" class="text-xl font-bold text-white">All Resources</h2>
+                            <p id="resultsCount" class="text-sm text-gray-500 mt-0.5">Loading…</p>
+                        </div>
+                        <!-- Sort -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-gray-500">Sort:</span>
+                            <select id="libSortSelect" class="bg-gray-800 text-white text-sm px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+                                <option value="latest">Latest</option>
+                                <option value="oldest">Oldest</option>
+                                <option value="name">Name (A-Z)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Cards Grid -->
+                    <div id="libCardsGrid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                        <!-- Skeleton placeholders -->
+                        <div class="skeleton rounded-2xl h-72"></div>
+                        <div class="skeleton rounded-2xl h-72"></div>
+                        <div class="skeleton rounded-2xl h-72"></div>
+                        <div class="skeleton rounded-2xl h-72"></div>
+                        <div class="skeleton rounded-2xl h-72"></div>
+                        <div class="skeleton rounded-2xl h-72"></div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div id="paginationContainer" class="flex items-center justify-center gap-2 mt-10 hidden">
+                        <button id="prevPageBtn" class="page-btn px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition text-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <div id="pageNumbers" class="flex gap-1"></div>
+                        <button id="nextPageBtn" class="page-btn px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition text-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </main>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Actions -->
+    <div class="fixed bottom-6 left-6 z-40 flex flex-col gap-3">
+        <a href="#Contact-Us" class="inline-flex h-12 items-center gap-3 rounded-full border border-amber-500 bg-gray-900 px-5 text-sm font-semibold text-amber-500 shadow-lg shadow-black/30 transition hover:bg-amber-500 hover:text-black" aria-label="Contact us">
+            <i class="fa-solid fa-envelope"></i>
+        </a>
+        <button id="scrollTopBtn" type="button" class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-amber-500 bg-gray-900 text-amber-500 shadow-lg shadow-black/30 transition hover:bg-amber-500 hover:text-black" aria-label="Scroll to top">
+            <i class="fa-solid fa-arrow-up"></i>
+        </button>
+    </div>
+
+    <!-- Loader -->
+    <div id="pageLoader" class="fixed inset-0 bg-black flex items-center justify-center z-[9999] hidden">
+        <div class="flex flex-col items-center gap-4">
+            <div class="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-gray-400 text-sm">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="./script/supabase.js"></script>
+    <script src="./script/script.js"></script>
+    <script type="module" src="./script/library.js"></script>
+</body>
+</html>

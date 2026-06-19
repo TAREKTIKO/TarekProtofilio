@@ -52,6 +52,8 @@
     <script type="module" src="./script/supabase.js"></script>
     <!-- Dashboard script module -->
     <script type="module" src="./script/dashboardscript.js"></script>
+    <!-- Library dashboard script module -->
+    <script type="module" src="./script/library-dashboard.js"></script>
     <!-- Settings Dashboard -->
     <script src="./script/settings-dashboard.js"></script>
 </head>
@@ -81,6 +83,7 @@
             <button class="hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" style="color: white;">Services</button>
             <button class="hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" style="color: white;">Interactions</button>
             <button class="hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" style="color: white;">Users</button>
+            <button class="hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg" id="library-btn" style="color: white;">Library</button>
             <!-- Settings Button (dropdown moved outside sidebar) -->
             <button class="w-full hover:bg-yellow-600 hover:text-black transition py-2 rounded-lg text-center" id="settings-dropdown-btn" style="color: white;">
                 Settings
@@ -105,6 +108,89 @@
             <i class="fa-solid fa-palette text-sm"></i>
             Appearance Settings
         </button>
+    </div>
+
+    <!-- Library Modals -->
+    <div id="lib-add-item-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-gray-900 border border-yellow-600 rounded-2xl shadow-2xl p-6 w-[90%] max-w-4xl m-4 h-[85vh] flex flex-col">
+            <h2 class="text-2xl font-bold text-yellow-600 mb-6" id="lib-modal-title">Add Library Item</h2>
+            <div class="overflow-y-auto pr-2 flex-1 custom-scrollbar">
+                <form id="lib-add-item-form" class="flex flex-col gap-8 text-white">
+                    
+                    <!-- Basic Info Section -->
+                    <div class="bg-gray-800/50 p-5 rounded-xl border border-gray-700">
+                        <h3 class="text-lg font-semibold text-amber-500 mb-4 border-b border-gray-700 pb-2"><i class="fa-solid fa-circle-info mr-2"></i>Basic Information</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1.5 md:col-span-2">
+                                <label class="text-sm text-gray-400">Title</label>
+                                <input type="text" id="lib-item-title" placeholder="e.g. Authentication Setup" required class="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-gray-400">Subcategory</label>
+                                <select id="lib-item-subcat" required class="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                    <option value="">Select Subcategory...</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-gray-400">Main Image URL</label>
+                                <input type="text" id="lib-item-main-img" placeholder="https://..." class="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div class="flex flex-col gap-1.5 md:col-span-2">
+                                <label class="text-sm text-gray-400">Short Description</label>
+                                <textarea id="lib-item-short-desc" rows="2" placeholder="Brief summary..." class="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"></textarea>
+                            </div>
+                            <div class="flex flex-col gap-1.5 md:col-span-2">
+                                <label class="text-sm text-gray-400">Technologies (comma separated)</label>
+                                <input type="text" id="lib-item-techs" placeholder="React, Tailwind, Node.js" class="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Section -->
+                    <div class="bg-gray-800/50 p-5 rounded-xl border border-gray-700">
+                        <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                            <h3 class="text-lg font-semibold text-amber-500"><i class="fa-solid fa-images mr-2"></i>Media Gallery</h3>
+                            <button type="button" id="lib-add-media-btn" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-white transition"><i class="fa-solid fa-plus mr-1"></i>Add Image</button>
+                        </div>
+                        <div id="lib-media-container" class="flex flex-col gap-3">
+                            <!-- Dynamic media inputs go here -->
+                            <p class="text-sm text-gray-500 italic">No gallery images added.</p>
+                        </div>
+                    </div>
+
+                    <!-- Content Sections -->
+                    <div class="bg-gray-800/50 p-5 rounded-xl border border-gray-700">
+                        <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                            <h3 class="text-lg font-semibold text-amber-500"><i class="fa-solid fa-code mr-2"></i>Content Sections</h3>
+                            <button type="button" id="lib-add-section-btn" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-white transition"><i class="fa-solid fa-plus mr-1"></i>Add Section</button>
+                        </div>
+                        <div id="lib-sections-container" class="flex flex-col gap-6">
+                            <!-- Dynamic sections go here -->
+                            <p class="text-sm text-gray-500 italic">No content sections added.</p>
+                        </div>
+                    </div>
+
+                    <!-- Links Section -->
+                    <div class="bg-gray-800/50 p-5 rounded-xl border border-gray-700">
+                        <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                            <h3 class="text-lg font-semibold text-amber-500"><i class="fa-solid fa-link mr-2"></i>Action Links</h3>
+                            <button type="button" id="lib-add-link-btn" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-white transition"><i class="fa-solid fa-plus mr-1"></i>Add Link</button>
+                        </div>
+                        <div id="lib-links-container" class="flex flex-col gap-3">
+                            <!-- Dynamic links go here -->
+                            <p class="text-sm text-gray-500 italic">No action links added.</p>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            
+            <!-- Footer Buttons -->
+            <div class="mt-6 pt-4 border-t border-gray-700 flex justify-end gap-3 shrink-0">
+                <button type="button" id="lib-cancel-item-btn" class="px-5 py-2.5 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 transition font-medium">Cancel</button>
+                <button type="button" id="lib-save-item-btn" class="px-5 py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-black transition font-medium">Save Item</button>
+            </div>
+        </div>
     </div>
     
     <!-- ============================================================================================================================= -->
@@ -515,7 +601,116 @@
             </div>
             
         </div>
-        
+
+        <!-- ============================================================================================================================= -->
+        <!-- library-page -->
+        <div id="library-content" class="hidden transition-all duration-300 text-white p-6">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-yellow-600">Library Management</h2>
+                    <p class="text-gray-400 text-sm">Manage categories, subcategories, and library items</p>
+                </div>
+                <button id="lib-add-item-btn" class="bg-yellow-600 hover:bg-yellow-500 text-black font-medium py-2 px-5 rounded-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Add Item
+                </button>
+            </div>
+
+            <!-- Sub-tabs -->
+            <div class="flex gap-2 mb-6 border-b border-gray-700 pb-1">
+                <button class="lib-tab active-lib-tab px-4 py-2 rounded-t-lg text-sm font-semibold border-b-2 border-yellow-500 text-yellow-500" data-lib-tab="items">Items</button>
+                <button class="lib-tab px-4 py-2 rounded-t-lg text-sm font-semibold text-gray-400 hover:text-yellow-400 transition border-b-2 border-transparent" data-lib-tab="categories">Categories</button>
+                <button class="lib-tab px-4 py-2 rounded-t-lg text-sm font-semibold text-gray-400 hover:text-yellow-400 transition border-b-2 border-transparent" data-lib-tab="subcategories">Subcategories</button>
+            </div>
+
+            <!-- Items Tab -->
+            <div id="lib-tab-items">
+                <div class="w-full bg-gray-900 rounded-2xl p-6 border border-gray-800 shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-amber-400">All Library Items</h3>
+                        <input type="text" id="lib-items-search" placeholder="Search items…" class="bg-gray-800 border border-gray-700 text-white text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 w-52">
+                    </div>
+                    <div id="lib-items-list" class="flex flex-col gap-4">
+                        <p class="text-gray-500 text-sm text-center py-8"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading items…</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Tab -->
+            <div id="lib-tab-categories" class="hidden">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Add Category Form -->
+                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                        <h3 class="text-lg font-semibold text-amber-400 mb-4">Add New Category</h3>
+                        <form id="lib-add-cat-form" class="flex flex-col gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-gray-400">Category Name</label>
+                                <input type="text" id="lib-cat-name" placeholder="e.g. JavaScript" required class="bg-gray-800 border border-gray-700 text-white px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-gray-400">Icon Class (FontAwesome)</label>
+                                <input type="text" id="lib-cat-icon" placeholder="e.g. fa-brands fa-js" class="bg-gray-800 border border-gray-700 text-white px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-gray-400">Sort Order</label>
+                                <input type="number" id="lib-cat-order" placeholder="0" value="0" class="bg-gray-800 border border-gray-700 text-white px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" id="lib-cat-submit-btn" class="bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-2.5 flex-1 rounded-lg transition">Add Category</button>
+                                <button type="button" id="lib-cat-cancel-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2.5 px-4 rounded-lg transition hidden">Cancel Edit</button>
+                            </div>
+                            <p id="lib-cat-msg" class="text-sm hidden"></p>
+                        </form>
+                    </div>
+                    <!-- Existing Categories -->
+                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                        <h3 class="text-lg font-semibold text-amber-400 mb-4">Existing Categories</h3>
+                        <div id="lib-categories-list" class="flex flex-col gap-2">
+                            <p class="text-gray-500 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading…</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subcategories Tab -->
+            <div id="lib-tab-subcategories" class="hidden">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Add Subcategory Form -->
+                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                        <h3 class="text-lg font-semibold text-amber-400 mb-4">Add New Subcategory</h3>
+                        <form id="lib-add-subcat-form" class="flex flex-col gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-gray-400">Parent Category</label>
+                                <select id="lib-subcat-parent" required class="bg-gray-800 border border-gray-700 text-white px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                    <option value="">Select category…</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-gray-400">Subcategory Name</label>
+                                <input type="text" id="lib-subcat-name" placeholder="e.g. Landing Pages" required class="bg-gray-800 border border-gray-700 text-white px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-gray-400">Sort Order</label>
+                                <input type="number" id="lib-subcat-order" placeholder="0" value="0" class="bg-gray-800 border border-gray-700 text-white px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" id="lib-subcat-submit-btn" class="bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-2.5 flex-1 rounded-lg transition">Add Subcategory</button>
+                                <button type="button" id="lib-subcat-cancel-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2.5 px-4 rounded-lg transition hidden">Cancel Edit</button>
+                            </div>
+                            <p id="lib-subcat-msg" class="text-sm hidden"></p>
+                        </form>
+                    </div>
+                    <!-- Existing Subcategories -->
+                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                        <h3 class="text-lg font-semibold text-amber-400 mb-4">Existing Subcategories</h3>
+                        <div id="lib-subcategories-list" class="flex flex-col gap-2">
+                            <p class="text-gray-500 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading…</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ============================================================================================================================= -->
         <!-- settings-page -->
         <div id="settings-content" class="hidden transition-all duration-300 p-6">

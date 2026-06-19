@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Item | Tarek Ahmed</title>
+    <meta name="description" content="Library item details — code snippet, component, or template by Tarek Ahmed.">
+    <link rel="stylesheet" href="style/all.css">
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Prism.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <!-- style -->
+    <link rel="stylesheet" href="style/style.css">
+    <style>
+        /* ===== DETAILS PAGE STYLES ===== */
+        .detail-hero-bg {
+            background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(245,158,11,0.1) 0%, transparent 60%),
+                        linear-gradient(to bottom, #000, #111827);
+        }
+
+        /* Image carousel */
+        .gallery-track {
+            display: flex;
+            transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .gallery-slide {
+            min-width: 100%;
+            position: relative;
+        }
+        .gallery-slide img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            cursor: pointer;
+            border-radius: 1rem;
+        }
+        @media (max-width: 768px) {
+            .gallery-slide img { height: 220px; }
+        }
+
+        /* Gallery nav buttons */
+        .gallery-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid rgba(245,158,11,0.4);
+            color: #f59e0b;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+        .gallery-btn:hover {
+            background: rgba(245,158,11,0.2);
+            border-color: #f59e0b;
+        }
+        .gallery-btn-prev { left: 12px; }
+        .gallery-btn-next { right: 12px; }
+
+        /* Thumbnail strip */
+        .thumb {
+            width: 72px;
+            height: 52px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .thumb:hover { opacity: 0.9; border-color: rgba(245,158,11,0.5); }
+        .thumb.active { opacity: 1; border-color: #f59e0b; }
+
+        /* Fullscreen lightbox */
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+        #lightbox.show { display: flex; }
+        #lightboxImg {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 60px rgba(0,0,0,0.8);
+        }
+
+        /* Content section card */
+        .section-card {
+            background: rgba(17,24,39,0.9);
+            border: 1px solid rgba(75,85,99,0.4);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .section-card:hover {
+            border-color: rgba(245,158,11,0.3);
+        }
+
+        /* Collapsed description */
+        .section-desc {
+            position: relative;
+            transition: max-height 0.4s ease;
+            overflow: hidden;
+        }
+        .section-desc.collapsed {
+            max-height: 90px;
+        }
+        .section-desc.collapsed::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 48px;
+            background: linear-gradient(transparent, rgba(17,24,39,0.95));
+        }
+
+        /* Code block */
+        .code-block-wrapper {
+            position: relative;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: 1px solid rgba(75,85,99,0.5);
+        }
+        .code-block-wrapper pre[class*="language-"] {
+            margin: 0;
+            border-radius: 0;
+            font-size: 0.8rem;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+        .code-block-wrapper pre[class*="language-"].collapsed {
+            max-height: 160px;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(30,41,59,0.9);
+            border: 1px solid rgba(75,85,99,0.6);
+            color: #9ca3af;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+            z-index: 2;
+        }
+        .copy-btn:hover {
+            background: rgba(245,158,11,0.15);
+            border-color: rgba(245,158,11,0.5);
+            color: #f59e0b;
+        }
+        .copy-btn.copied { color: #22c55e; border-color: rgba(34,197,94,0.4); }
+
+        /* Tech badge */
+        .tech-badge {
+            font-size: 0.65rem;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        /* Link action buttons */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .action-btn-primary {
+            background: rgba(245,158,11,0.15);
+            border-color: rgba(245,158,11,0.4);
+            color: #f59e0b;
+        }
+        .action-btn-primary:hover { background: rgba(245,158,11,0.25); border-color: #f59e0b; }
+        .action-btn-secondary {
+            background: rgba(75,85,99,0.2);
+            border-color: rgba(75,85,99,0.5);
+            color: #9ca3af;
+        }
+        .action-btn-secondary:hover { background: rgba(75,85,99,0.3); border-color: #9ca3af; color: white; }
+
+        /* Related card */
+        .related-card {
+            background: rgba(17,24,39,0.85);
+            border: 1px solid rgba(75,85,99,0.4);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.25s;
+        }
+        .related-card:hover {
+            border-color: rgba(245,158,11,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        /* Shimmer skeleton */
+        @keyframes shimmer {
+            0%   { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+            background-size: 468px 100%;
+            animation: shimmer 1.4s infinite linear;
+            border-radius: 0.5rem;
+        }
+
+        /* Favorite button */
+        @keyframes favPulse { 0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(1)} }
+        .fav-pulse { animation: favPulse 0.35s ease; }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen">
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white border-b border-amber-600">
+        <div class="container mx-auto flex flex-wrap justify-between items-center gap-3 p-4">
+            <h3 class="order-1 text-2xl font-bold">Tarek Ahmed</h3>
+
+            <button id="mobile-menu-btn" type="button" class="order-3 lg:hidden w-11 h-11 flex items-center justify-center rounded-full bg-gray-800 border border-gray-700 text-amber-500 hover:bg-gray-700 hover:border-amber-600 transition" aria-controls="primary-menu" aria-expanded="false" aria-label="Toggle navigation menu">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+
+            <ul id="primary-menu" class="order-4 hidden w-full flex-col gap-2 rounded-xl border border-gray-800 bg-gray-900 p-4 shadow-2xl lg:order-2 lg:flex lg:w-auto lg:flex-row lg:items-center lg:gap-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
+                <li><a href="./index.html" class="hover:text-amber-500 transition">Home</a></li>
+                <li><a href="./projects.html" class="hover:text-amber-500 transition">Projects</a></li>
+                <li><a href="./index.html#Services" class="hover:text-amber-500 transition">Service</a></li>
+                <li><a href="./index.html#Contact-Us" class="hover:text-amber-500 transition">Contact Us</a></li>
+                <li><a href="./Certificates.html" class="hover:text-amber-500 transition">Certificates</a></li>
+            </ul>
+
+            <div class="relative order-2 ml-auto lg:order-3 lg:ml-0" id="user-menu-wrapper">
+                <div id="user-info-btn" class="flex items-center gap-3 bg-gray-800 p-2 rounded-full hover:cursor-pointer hover:bg-gray-700 transition-colors border border-transparent hover:border-amber-600/50">
+                    <span id="signInBtn" class="text-sm font-semibold px-4 cursor-pointer">Sign In</span>
+                </div>
+                <div id="user-dropdown" class="absolute right-0 mt-3 w-64 bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl p-5 hidden transform origin-top-right transition-all duration-200 opacity-0 scale-95">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="relative mb-3">
+                            <div id="dropdownAvatar" class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center border-2 border-amber-600 shadow-lg shadow-amber-600/20">
+                                <i class="fa-solid fa-user text-amber-500 text-4xl"></i>
+                            </div>
+                            <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-gray-900 rounded-full"></span>
+                        </div>
+                        <h4 id="dropdownName" class="font-bold text-lg text-white">User</h4>
+                        <p id="dropdownRole" class="text-xs text-amber-500 font-medium mb-4">User • Online</p>
+                        <div class="w-full h-px bg-gray-800 mb-4"></div>
+                        <button id="manageBtn" type="button" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 shadow-lg shadow-amber-600/10 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-gear text-xs"></i> Manage Account
+                        </button>
+                        <button id="signOutBtn" type="button" class="w-full mt-2 text-gray-400 hover:text-red-400 py-2 text-xs transition-colors">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- User Modal -->
+    <div id="user-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-gray-900 w-full max-w-md p-6 rounded-2xl border border-gray-700 shadow-xl relative">
+            <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-red-400"><i class="fa-solid fa-xmark"></i></button>
+            <div class="flex flex-col items-center gap-3">
+                <div id="mainAvatar" class="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center border-2 border-amber-600"><i class="fa-solid fa-user text-amber-500 text-4xl"></i></div>
+                <h3 id="displayName" class="text-lg font-bold text-white">Tarek Ahmed</h3>
+            </div>
+            <div class="mt-6 flex flex-col gap-4">
+                <input id="editName" type="text" placeholder="Edit Name" class="p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-amber-500">
+                <div>
+                    <p class="text-sm text-gray-300 mb-2">Choose Avatar</p>
+                    <div class="flex gap-3 overflow-x-auto pb-2">
+                        <img src="./img/Avatar1.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar2.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar3.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar4.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar5.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                        <img src="./img/Avatar6.png" class="avatar-option w-16 h-16 rounded-full border-2 border-transparent cursor-pointer hover:border-amber-500">
+                    </div>
+                </div>
+                <button id="saveBtn" class="bg-amber-500 text-black py-2 rounded-xl hover:bg-amber-400 transition">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="pt-20 pb-16 min-h-screen">
+
+        <!-- ===== HERO HEADER ===== -->
+        <div class="detail-hero-bg py-10 px-6 border-b border-gray-800/50">
+            <div class="container mx-auto">
+                <!-- Breadcrumb -->
+                <nav id="detailBreadcrumb" class="flex items-center gap-2 text-sm text-gray-500 mb-5" aria-label="Breadcrumb">
+                    <a href="./index.html" class="hover:text-amber-500 transition">Home</a>
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                    <a href="./library.html" class="hover:text-amber-500 transition">Library</a>
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                    <span id="breadcrumbCategory" class="text-gray-400">—</span>
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                    <span id="breadcrumbTitle" class="text-amber-500 truncate max-w-[200px]">—</span>
+                </nav>
+
+                <div class="flex flex-col lg:flex-row lg:items-start gap-6">
+                    <div class="flex-1">
+                        <!-- Category & subcategory badges -->
+                        <div id="detailBadges" class="flex flex-wrap gap-2 mb-4">
+                            <div class="skeleton h-6 w-20 rounded-full"></div>
+                            <div class="skeleton h-6 w-28 rounded-full"></div>
+                        </div>
+
+                        <!-- Title -->
+                        <h1 id="detailTitle" class="text-4xl md:text-5xl font-extrabold leading-tight mb-3">
+                            <span class="skeleton inline-block w-80 h-10 rounded-lg"></span>
+                        </h1>
+
+                        <!-- Short description -->
+                        <p id="detailShortDesc" class="text-gray-400 text-lg leading-relaxed max-w-2xl mb-5"></p>
+
+                        <!-- Tech tags -->
+                        <div id="detailTechTags" class="flex flex-wrap gap-2 mb-5"></div>
+
+                        <!-- Meta row -->
+                        <div class="flex flex-wrap gap-5 text-sm text-gray-500">
+                            <span id="detailUpdated" class="flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-amber-500/70"></i>
+                                <span>—</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Favorite button -->
+                    <div class="flex-shrink-0">
+                        <button id="detailFavBtn" class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-500 transition font-semibold text-sm">
+                            <i class="fa-regular fa-bookmark"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== PAGE BODY ===== -->
+        <div class="container mx-auto px-4 lg:px-6 mt-8">
+            <div class="grid lg:grid-cols-[1fr_300px] gap-8 items-start">
+
+                <!-- ===== LEFT: Gallery + Sections ===== -->
+                <div>
+
+                    <!-- Gallery -->
+                    <div id="gallerySection" class="mb-10">
+                        <div class="relative overflow-hidden rounded-2xl border border-gray-800">
+                            <!-- Track -->
+                            <div id="galleryTrack" class="gallery-track">
+                                <!-- Slides injected by JS -->
+                                <div class="gallery-slide">
+                                    <div class="skeleton w-full h-[420px] rounded-2xl"></div>
+                                </div>
+                            </div>
+                            <!-- Arrows -->
+                            <button id="galleryPrev" class="gallery-btn gallery-btn-prev" aria-label="Previous image">
+                                <i class="fa-solid fa-chevron-left text-sm"></i>
+                            </button>
+                            <button id="galleryNext" class="gallery-btn gallery-btn-next" aria-label="Next image">
+                                <i class="fa-solid fa-chevron-right text-sm"></i>
+                            </button>
+                            <!-- Slide counter -->
+                            <div id="galleryCounter" class="absolute bottom-3 right-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm">1 / 1</div>
+                        </div>
+
+                        <!-- Thumbnail strip -->
+                        <div id="thumbStrip" class="flex gap-2 mt-3 overflow-x-auto pb-1"></div>
+                    </div>
+
+                    <!-- Content Sections -->
+                    <div id="sectionsContainer" class="space-y-5">
+                        <!-- Skeleton sections -->
+                        <div class="skeleton rounded-2xl h-40"></div>
+                        <div class="skeleton rounded-2xl h-40"></div>
+                    </div>
+
+                </div>
+
+                <!-- ===== RIGHT SIDEBAR ===== -->
+                <div class="space-y-5">
+
+                    <!-- Item info card -->
+                    <div class="section-card p-5">
+                        <h3 class="text-sm font-bold text-amber-500 uppercase tracking-wider mb-4">Item Info</h3>
+                        <dl class="space-y-3 text-sm">
+                            <div class="flex justify-between gap-3">
+                                <dt class="text-gray-500">Category</dt>
+                                <dd id="infoCategory" class="text-white font-medium text-right">—</dd>
+                            </div>
+                            <div class="flex justify-between gap-3">
+                                <dt class="text-gray-500">Subcategory</dt>
+                                <dd id="infoSubcategory" class="text-white font-medium text-right">—</dd>
+                            </div>
+                            <div class="flex justify-between gap-3">
+                                <dt class="text-gray-500">Last updated</dt>
+                                <dd id="infoUpdated" class="text-white font-medium text-right">—</dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <!-- All links card -->
+                    <div id="linksCard" class="section-card p-5 hidden">
+                        <h3 class="text-sm font-bold text-amber-500 uppercase tracking-wider mb-4">
+                            <i class="fa-solid fa-link mr-1.5"></i> Resources & Links
+                        </h3>
+                        <div id="linksList" class="space-y-2.5"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ===== RELATED RESOURCES ===== -->
+            <div id="relatedSection" class="mt-14 hidden">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-2xl font-bold text-white">Related Resources</h2>
+                    <div class="flex-1 h-px bg-gray-800"></div>
+                </div>
+                <div id="relatedGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== LIGHTBOX ===== -->
+    <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+        <button id="lightboxClose" class="absolute top-5 right-5 text-white text-3xl hover:text-amber-500 transition z-10" aria-label="Close preview">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <button id="lightboxPrev" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl hover:text-amber-500 transition z-10 bg-black/50 w-10 h-10 rounded-full flex items-center justify-center">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <img id="lightboxImg" src="" alt="Full screen preview">
+        <button id="lightboxNext" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl hover:text-amber-500 transition z-10 bg-black/50 w-10 h-10 rounded-full flex items-center justify-center">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Floating Actions -->
+    <div class="fixed bottom-6 left-6 z-40 flex flex-col gap-3">
+        <a href="#Contact-Us" class="inline-flex h-12 items-center gap-3 rounded-full border border-amber-500 bg-gray-900 px-5 text-sm font-semibold text-amber-500 shadow-lg shadow-black/30 transition hover:bg-amber-500 hover:text-black">
+            <i class="fa-solid fa-envelope"></i>
+        </a>
+        <button id="scrollTopBtn" type="button" class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-amber-500 bg-gray-900 text-amber-500 shadow-lg shadow-black/30 transition hover:bg-amber-500 hover:text-black">
+            <i class="fa-solid fa-arrow-up"></i>
+        </button>
+    </div>
+
+    <!-- Loader -->
+    <div id="pageLoader" class="fixed inset-0 bg-black flex items-center justify-center z-[9999] hidden">
+        <div class="flex flex-col items-center gap-4">
+            <div class="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-gray-400 text-sm">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="./script/supabase.js"></script>
+    <script src="./script/script.js"></script>
+    <script type="module" src="./script/library-details.js"></script>
+</body>
+</html>

@@ -18,6 +18,7 @@ const displayName = document.getElementById("displayName");
 const dropdownName = document.getElementById("dropdownName");
 const dropdownRole = document.getElementById("dropdownRole");
 let dashboardBtn = document.getElementById("dashboardBtn");
+let libraryBtn = document.getElementById("libraryBtn");
 
 const mainAvatar = document.getElementById("mainAvatar");
 const dropdownAvatar = document.getElementById("dropdownAvatar");
@@ -77,6 +78,31 @@ function renderDashboardButton(isAdmin) {
     saveBtn.insertAdjacentElement("afterend", dashboardBtn);
 }
 
+function renderLibraryButton(isAdmin) {
+    libraryBtn = document.getElementById("libraryBtn");
+
+    if (!isAdmin) {
+        libraryBtn?.remove();
+        libraryBtn = null;
+        return;
+    }
+
+    if (libraryBtn || !saveBtn?.parentElement) return;
+
+    libraryBtn = document.createElement("button");
+    libraryBtn.id = "libraryBtn";
+    libraryBtn.type = "button";
+    libraryBtn.textContent = "Go To Library";
+    libraryBtn.className = "border border-amber-500 py-2 rounded-xl text-white hover:bg-amber-500 hover:text-black transition";
+    libraryBtn.addEventListener("click", () => {
+        window.location.href = "library.html";
+    });
+
+    // Insert after dashboardBtn if it exists, otherwise after saveBtn
+    const anchor = dashboardBtn || saveBtn;
+    anchor.insertAdjacentElement("afterend", libraryBtn);
+}
+
 function renderLoggedInUI(name, avatar, role = "user") {
     if (!userBtn) return;
 
@@ -86,6 +112,7 @@ function renderLoggedInUI(name, avatar, role = "user") {
     const isAdmin = userRole.toLowerCase() === "admin";
 
     renderDashboardButton(isAdmin);
+    renderLibraryButton(isAdmin);
 
     // Navbar
     userBtn.innerHTML = `
@@ -129,6 +156,7 @@ function renderLoggedOutUI() {
 
     isLoggedIn = false;
     renderDashboardButton(false);
+    renderLibraryButton(false);
     userBtn.innerHTML = `
         <span id="signInBtn" class="text-sm font-semibold px-4 cursor-pointer">
             Sign In

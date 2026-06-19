@@ -1184,7 +1184,8 @@ function initializeDashboard() {
         "Projects": "projects-content",
         "Services": "services-content",
         "Interactions": "interactions-content",
-        "Users": "users-content"
+        "Users": "users-content",
+        "Library": "library-content"
     };
 
     console.log(`Found ${buttons.length} navigation buttons`);
@@ -1251,6 +1252,8 @@ function initializeDashboard() {
                 loadFullInteractions();
             } else if (btnName === "Users") {
                 loadUsersPage();
+            } else if (btnName === "Library") {
+                // Future: Add loadLibraryManagement() if needed here
             }
         });
     });
@@ -1286,3 +1289,37 @@ function initializeDashboard() {
     await waitForSupabase();
     initializeDashboard();
 })();
+
+// ────────────────────────────────────────────────
+//  Library Sub-Tab Logic
+// ────────────────────────────────────────────────
+function initLibraryTabs() {
+    const tabs = document.querySelectorAll(".lib-tab");
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            // Remove active classes
+            tabs.forEach(t => {
+                t.classList.remove("active-lib-tab", "border-yellow-500", "text-yellow-500", "border-b-2");
+                t.classList.add("text-gray-400", "border-transparent", "border-b-2");
+            });
+            // Add to clicked
+            tab.classList.add("active-lib-tab", "border-yellow-500", "text-yellow-500", "border-b-2");
+            tab.classList.remove("text-gray-400", "border-transparent");
+
+            // Hide all contents
+            document.getElementById("lib-tab-items")?.classList.add("hidden");
+            document.getElementById("lib-tab-categories")?.classList.add("hidden");
+            document.getElementById("lib-tab-subcategories")?.classList.add("hidden");
+
+            // Show target
+            const target = tab.dataset.libTab;
+            if (target) {
+                const el = document.getElementById(`lib-tab-${target}`);
+                if (el) el.classList.remove("hidden");
+            }
+        });
+    });
+}
+document.addEventListener("DOMContentLoaded", () => {
+    initLibraryTabs();
+});
