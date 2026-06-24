@@ -3,6 +3,13 @@
 // ============================================================
 import { supabase } from "./supabase.js";
 
+// ─── Admin Auth Guard ────────────────────────────────────────
+const _userRole = localStorage.getItem("userRole");
+const _adminAuth = localStorage.getItem("adminAuthenticated");
+if (_userRole !== "admin" || _adminAuth !== "true") {
+    window.location.replace("admin-login.html?redirect=library.html");
+}
+
 // ─── Constants ───────────────────────────────────────────────
 const FAV_KEY    = "lib_favorites";
 const RECENT_KEY = "lib_recently_viewed";

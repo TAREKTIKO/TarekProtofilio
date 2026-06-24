@@ -3,8 +3,15 @@
 // ============================================================
 import { supabase } from "./supabase.js";
 
+// ─── Admin Auth Guard ────────────────────────────────────────
+const _userRole = localStorage.getItem("userRole");
+const _adminAuth = localStorage.getItem("adminAuthenticated");
+if (_userRole !== "admin" || _adminAuth !== "true") {
+    window.location.replace("admin-login.html?redirect=library.html");
+}
+
 // ─── State ───────────────────────────────────────────────────
-const ITEMS_PER_PAGE   = 12;
+const ITEMS_PER_PAGE   = 6;
 const FAV_KEY          = "lib_favorites";
 const RECENT_KEY       = "lib_recently_viewed";
 const RECENT_MAX       = 6;

@@ -1,11 +1,15 @@
 import { getSupabaseClient } from "./supabase.js";
 
+// ── Read redirect target from query string ──
+const _urlParams   = new URLSearchParams(window.location.search);
+const _redirectTo  = _urlParams.get("redirect") || "dashboard.html";
+
 // ── Auth guard: skip login page only if FULLY authenticated as admin ──
 // Must have BOTH flags set — prevents the loop with dashboard's guard
 const _role   = localStorage.getItem("userRole");
 const _authed = localStorage.getItem("adminAuthenticated");
 if (_role === "admin" && _authed === "true") {
-    window.location.replace("dashboard.html");
+    window.location.replace(_redirectTo);
 }
 
 // ── DOM refs ──
@@ -114,10 +118,10 @@ form?.addEventListener("submit", async (e) => {
         }
 
         success = true;
-        showMessage("Access granted. Redirecting to dashboard…", "success");
+        showMessage("Access granted. Redirecting…", "success");
 
         setTimeout(() => {
-            window.location.replace("dashboard.html");
+            window.location.replace(_redirectTo);
         }, 850);
 
     } catch (err) {

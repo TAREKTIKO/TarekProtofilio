@@ -95,7 +95,7 @@ function renderLibraryButton(isAdmin) {
     libraryBtn.textContent = "Go To Library";
     libraryBtn.className = "border border-amber-500 py-2 rounded-xl text-white hover:bg-amber-500 hover:text-black transition";
     libraryBtn.addEventListener("click", () => {
-        window.location.href = "library.html";
+        window.location.href = "admin-login.html?redirect=library.html";
     });
 
     // Insert after dashboardBtn if it exists, otherwise after saveBtn

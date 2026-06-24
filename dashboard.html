@@ -46,6 +46,22 @@
             display: none !important;
             visibility: hidden !important;
         }
+
+        /* Custom scrollbars for scrollable lists */
+        .overflow-y-auto::-webkit-scrollbar {
+            width: 6px;
+        }
+        .overflow-y-auto::-webkit-scrollbar-track {
+            background: rgba(31, 41, 55, 0.5);
+            border-radius: 4px;
+        }
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: #d97706; /* amber-600 */
+            border-radius: 4px;
+        }
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b; /* amber-500 */
+        }
     </style>
     <!-- Javascript -->
     <!-- Supabase module -->
@@ -638,9 +654,9 @@
 
             <!-- Categories Tab -->
             <div id="lib-tab-categories" class="hidden">
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 items-stretch">
                     <!-- Add Category Form -->
-                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 md:h-[450px] flex flex-col">
                         <h3 class="text-lg font-semibold text-amber-400 mb-4">Add New Category</h3>
                         <form id="lib-add-cat-form" class="flex flex-col gap-4">
                             <div class="flex flex-col gap-1.5">
@@ -663,9 +679,9 @@
                         </form>
                     </div>
                     <!-- Existing Categories -->
-                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 md:h-[450px] flex flex-col">
                         <h3 class="text-lg font-semibold text-amber-400 mb-4">Existing Categories</h3>
-                        <div id="lib-categories-list" class="flex flex-col gap-2">
+                        <div id="lib-categories-list" class="flex flex-col gap-2 overflow-y-auto flex-1" style="max-height: 350px;">
                             <p class="text-gray-500 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading…</p>
                         </div>
                     </div>
@@ -674,9 +690,9 @@
 
             <!-- Subcategories Tab -->
             <div id="lib-tab-subcategories" class="hidden">
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 items-stretch">
                     <!-- Add Subcategory Form -->
-                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 md:h-[450px] flex flex-col">
                         <h3 class="text-lg font-semibold text-amber-400 mb-4">Add New Subcategory</h3>
                         <form id="lib-add-subcat-form" class="flex flex-col gap-4">
                             <div class="flex flex-col gap-1.5">
@@ -701,9 +717,9 @@
                         </form>
                     </div>
                     <!-- Existing Subcategories -->
-                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                    <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 md:h-[450px] flex flex-col">
                         <h3 class="text-lg font-semibold text-amber-400 mb-4">Existing Subcategories</h3>
-                        <div id="lib-subcategories-list" class="flex flex-col gap-2">
+                        <div id="lib-subcategories-list" class="flex flex-col gap-2 overflow-y-auto flex-1" style="max-height: 350px;">
                             <p class="text-gray-500 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading…</p>
                         </div>
                     </div>
